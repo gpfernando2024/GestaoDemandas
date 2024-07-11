@@ -1,0 +1,730 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
+using NPOI.XWPF.UserModel;
+using GestaoDemandas.Models;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
+using NPOI.Util;
+using System.Linq;
+using DocumentFormat.OpenXml.EMMA;
+using NPOI.SS.Formula;
+using NPOI.OpenXmlFormats.Wordprocessing;
+using NPOI.XWPF.Model;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.WebControls;
+
+namespace GestaoDemandas.Controllers
+{
+      
+    public class DailyReportController : Controller
+    {
+        private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'&$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_GerenteProjeto,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$orderby=CreatedDate desc";
+
+        // Token de autorização (substitua com seu token real)
+        private static readonly string AuthToken = "axsxmrtjbr74xwvgftxkta7bx475vf4nk54o6wmreal2mrbwndja";
+
+        public async Task<ActionResult> StatusReport()
+        {
+            var model = await GetDailyReportData();
+            return View(model);
+        }
+
+        public async Task<ActionResult> GenerateDocx(DailyReportViewModel model)
+        {
+            var currentDate = DateTime.Now.ToString("dd/MM/yyyy");
+            var fileName = $"ReportDiario-{currentDate}.docx";
+
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    // Crie um novo documento DOCX
+                    XWPFDocument doc = new XWPFDocument();
+
+                    // Cria o cabeçalho ocupando toda a largura da página
+                    CreateHeader(doc, currentDate);
+
+                    // Título do documento
+                    XWPFParagraph titleParagraph = doc.CreateParagraph();
+                    titleParagraph.Alignment = ParagraphAlignment.RIGHT;
+                    titleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    titleParagraph.SpacingAfterLines = 1;
+                    XWPFRun titleRun = titleParagraph.CreateRun();
+                    titleRun.SetText("Revisão Diária");
+                    titleRun.IsBold = false;
+                    titleRun.FontSize = 22;  // Reduzido de 11 para 9
+
+                    // Subtítulo do documento
+                    XWPFParagraph subtitleParagraph = doc.CreateParagraph();
+                    subtitleParagraph.Alignment = ParagraphAlignment.RIGHT;
+                    subtitleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    subtitleParagraph.SpacingAfterLines = 1;
+                    XWPFRun subtitleRun = subtitleParagraph.CreateRun();
+                    subtitleRun.SetText("Projeto SEDUC");
+                    subtitleRun.IsBold = false;
+                    subtitleRun.FontSize = 16;  // Reduzido de 16 para 12
+
+                    // Obtém os dados do relatório diário
+                    model = await GetDailyReportData();
+
+                    // Histórico de Revisão
+                    AddRevisionHistory(doc, model.RevisionHistory);
+
+                    // Eventos / Entregas
+                    AddEventsDeliveries(doc, model.EventsDeliveries);
+
+                    // Projetos em Andamento
+                    AddOngoingProjects(doc, model.OngoingProjects);
+
+                    // Adiciona a seção Custom_Sistema nos Eventos e Entregas
+                    //AddCustomSistemaEventDelivery(doc, model.EventsDeliveries);
+
+                    // Adiciona a seção Custom_Sistema nos Projetos em Andamento
+                    //AddCustomSistemaOngoingProject(doc, model.OngoingProjects);
+
+                    // Escreve o documento no stream de memória
+                    doc.Write(ms);
+                    byte[] fileBytes = ms.ToArray();
+                    return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Lidar com exceções aqui, se necessário
+                throw new ApplicationException("Falha ao gerar relatório DOCX.", ex);
+            }
+        }
+
+
+        private async Task<DailyReportViewModel> GetDailyReportData()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // Configurando o cabeçalho de autorização
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                        Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{AuthToken}")));
+
+                    HttpResponseMessage response = await client.GetAsync(AzureAnalyticsUrl);
+
+                    // Verificar se a resposta foi bem-sucedida
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            // Caso seja uma resposta 401 Unauthorized, lidar com isso aqui
+                            throw new ApplicationException("Unauthorized access to Azure Analytics. Check authorization token and permissions.");
+                        }
+                        else
+                        {
+                            // Lidar com outros códigos de status de erro aqui, se necessário
+                            throw new ApplicationException($"Error fetching data: {response.StatusCode}");
+                        }
+                    }
+
+                    // Ler o corpo da resposta
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    JObject jsonData = JObject.Parse(responseBody);
+
+                    // Criar um objeto anônimo para desserialização
+                    var responseObj = new { value = new List<WorkItem>() };
+                    // Desserializar o JSON para uma lista de objetos WorkItem
+                   
+                    responseObj = JsonConvert.DeserializeAnonymousType(responseBody, responseObj);
+                    var workItems = responseObj.value;
+
+                    // Construir o modelo de visualização com os dados obtidos
+                    var model = new DailyReportViewModel
+                    {
+                        ReportTitle = "Revisão Diária",
+                        ProjectTitle = "Projeto SEDUC",
+                        RevisionHistory = new List<RevisionHistoryItem>
+                        {
+                            new RevisionHistoryItem
+                            {
+                                Data = new DateTime(2022, 07, 05),
+                                Versao = "1",
+                                Descricao = "Acompanhamento Executivo projetos SEDUC",
+                                Autor = "Valdemir A. Ereno Junior"
+                            }
+                        },
+                        EventsDeliveries = ParseEventDeliveryItems(workItems),
+                        OngoingProjects = ParseProjectItems(workItems)
+                    };
+
+                    return model;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // Logar a exceção ou lidar com ela apropriadamente
+                throw new ApplicationException("Failed to retrieve data from Azure Analytics. Check network connection or try again later.", ex);
+            }
+            catch (Exception ex)
+            {
+                // Lidar com outras exceções aqui, se necessário
+                throw new ApplicationException("An error occurred while fetching data from Azure Analytics.", ex);
+            }
+        }
+
+        private List<EventDeliveryItem> ParseEventDeliveryItems(List<WorkItem> workItems)
+        {
+            var items = new List<EventDeliveryItem>();
+            foreach (var item in workItems)
+            {
+                string state = item.State;
+                string customSistema = item.Custom_Sistema;
+
+                // Verificar se o estado é diferente de "Concluido"
+                if (state != "Concluido" &&
+                    (customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
+                {
+                    var eventItem = new EventDeliveryItem
+                    {
+                        Custom_Sistema = customSistema,
+                        WorkItemId = item.WorkItemId,
+                        Title = item.Title,
+                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
+                        DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
+                        Status = state,
+                        Observacao = item.Custom_Finalidade,
+                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef") // Data Fechamento
+                    };
+
+                    // Convertendo datas com tratamento para evitar exceções
+                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    {
+                        eventItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                    }
+
+                    if (item.Custom_DataInicioAtendimento != null)
+                    {
+                        eventItem.DataInicioAtendimento = item.Custom_DataInicioAtendimento.Value;
+                    }
+
+                    if (item.Custom_DataPrevistaDaEntrega != null)
+                    {
+                        eventItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega.Value;
+                    }
+
+                    // Verificar se a data de conclusão é igual à data atual
+                    if (eventItem.Conclusao.HasValue && eventItem.Conclusao.Value.Date == DateTime.Today)
+                    {
+                        items.Add(eventItem);
+                    }
+                }
+            }
+            return items;
+        }
+
+
+        // Método para obter DateTime? com verificação de nulo
+
+
+        private List<ProjectItem> ParseProjectItems(List<WorkItem> workItems)
+        {
+            var items = new List<ProjectItem>();
+            foreach (var item in workItems)
+            {
+                string state = item.State;
+                string customSistema = item.Custom_Sistema;
+
+                // Verificar se o estado está entre os permitidos
+                if (state == "Desenvolvimento" ||
+                    state == "Aberto" ||
+                    state == "Suspenso - Temp" ||
+                    state == "Suspenso-Temp" ||
+                    state == "Análise" ||
+                    state == "Deploy Producao" ||
+                    state == "Aguardando Solicitante" &&
+                    (customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
+                {
+                    var projectItem = new ProjectItem
+                    {
+                        Custom_Sistema = customSistema,
+                        WorkItemId = item.WorkItemId,
+                        Title = item.Title,
+                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
+                        DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
+                        Status = state,
+                        Observacao = item.Custom_Finalidade,
+                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef") // Data Fechamento
+                    };
+
+                    // Convertendo datas com tratamento para evitar exceções
+                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    {
+                        // Data de Abertura
+                        projectItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                    }
+
+                    if (item.Custom_DataInicioAtendimento != null)
+                    {
+                        projectItem.DataInicioAtendimento = item.Custom_DataInicioAtendimento;
+                    }
+
+                    if (item.Custom_DataPrevistaDaEntrega != null)
+                    {
+                        projectItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega;
+                    }
+
+                    if (item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef != null)
+                    {
+                        projectItem.Conclusao = item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+                    }
+
+                    items.Add(projectItem);
+                }
+            }
+            return items;
+        }
+
+        // Ajuste a função GetNullableDateTime para aceitar um WorkItem
+        private DateTime? GetNullableDateTime(WorkItem item, string propertyName)
+        {
+            var property = item.GetType().GetProperty(propertyName);
+            if (property != null)
+            {
+                return (DateTime?)property.GetValue(item);
+            }
+            return null;
+        }
+
+        private void SetCellText(XWPFTableCell cell, string text, int fontSize)
+        {
+            var paragraph = cell.Paragraphs[0];
+            var run = paragraph.CreateRun();
+            run.SetText(text);
+            run.FontSize = fontSize;
+        }
+
+        private void SetCellImage(XWPFTableCell cell, string imagePath)
+        {
+            XWPFParagraph p = cell.Paragraphs.Count > 0 ? cell.Paragraphs[0] : cell.AddParagraph();
+            XWPFRun r = p.CreateRun();
+
+            try
+            {
+                using (FileStream imgStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    r.AddPicture(imgStream, (int)PictureType.JPEG, imagePath, Units.ToEMU(50), Units.ToEMU(50));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao carregar imagem: {ex.Message}");
+            }
+        }
+
+        private void CreateHeader(XWPFDocument doc, string currentDate)
+        {
+            // Cria uma seção de propriedades se não existir
+            CT_SectPr sectPr = doc.Document.body.sectPr;
+            if (sectPr == null)
+            {
+                sectPr = new CT_SectPr();
+                doc.Document.body.sectPr = sectPr;
+            }
+
+            // Configura a seção para ter um cabeçalho em todas as páginas
+            XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(doc, sectPr);
+
+            // Criação do cabeçalho
+            XWPFHeader header = headerFooterPolicy.CreateHeader(XWPFHeaderFooterPolicy.DEFAULT);
+
+            // Calcula a largura da página A4 em twips no sentido retrato
+            long pageWidthTwips = Units.ToEMU(210);  // Largura da página A4 em mm
+            pageWidthTwips = Units.PixelToEMU((int)(pageWidthTwips * 96 / 25.4));  // Convertendo de mm para pixels e depois para EMUs
+
+            // Criação da tabela no cabeçalho com 1 linha e 3 colunas
+            XWPFTable headerTable = header.CreateTable(1, 3);
+
+            // Define a largura da tabela para 100% da largura da página em twips
+            headerTable.Width = (int)pageWidthTwips;
+            headerTable.SetColumnWidth(0, (ulong)(pageWidthTwips / 3));
+            headerTable.SetColumnWidth(1, (ulong)(pageWidthTwips / 3));
+            headerTable.SetColumnWidth(2, (ulong)(pageWidthTwips / 3));
+
+            XWPFTableRow headerRow = headerTable.GetRow(0);
+
+            // Adiciona a primeira imagem (substitua com o caminho correto da sua imagem)
+            AddImageToCell(doc, headerRow.GetCell(0), @"F:\Sistemas\GestaoDemandas\Content\Imagens\Logo-Prodesp.jpg", 150);
+
+            // Adiciona o título "Revisão Diária - data atual" centralizado na célula
+            XWPFParagraph titleParagraph = headerRow.GetCell(1).AddParagraph();
+            titleParagraph.Alignment = ParagraphAlignment.CENTER;
+            XWPFRun titleRun = titleParagraph.CreateRun();
+            titleRun.SetText($"Revisão Diária - {currentDate}");
+            titleRun.IsBold = false;
+            titleRun.FontSize = 9;  // Reduzido de 11 para 9 
+            // Adiciona a segunda imagem (substitua com o caminho correto da sua imagem)
+            AddImageToCell(doc, headerRow.GetCell(2), @"F:\Sistemas\GestaoDemandas\Content\Imagens\Logo-SEDUC.jpg", 150);
+        }
+
+        private void AddImageToCell(XWPFDocument doc, XWPFTableCell cell, string imagePath, int imageWidthEMUs)
+        {
+            // Remove parágrafos existentes na célula
+            cell.RemoveParagraph(0);
+
+            // Cria um parágrafo na célula
+            XWPFParagraph paragraph = cell.AddParagraph();
+
+            // Cria um run no parágrafo
+            XWPFRun run = paragraph.CreateRun();
+
+            try
+            {
+                // Abre o arquivo de imagem
+                using (FileStream imgStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    // Adiciona a imagem ao run com redimensionamento para a largura desejada
+                    run.AddPicture(imgStream, (int)PictureType.JPEG, imagePath, Units.ToEMU(imageWidthEMUs), Units.ToEMU(60));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao carregar imagem: {ex.Message}");
+            }
+        }
+
+        private void AddRevisionHistory(XWPFDocument doc, List<RevisionHistoryItem> revisionHistory)
+        {
+            var paragraph = doc.CreateParagraph();
+            XWPFRun run = paragraph.CreateRun();
+            paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+            paragraph.SpacingAfterLines = 1;
+
+            run.SetText("Histórico de Revisões");
+            run.FontSize = 12;
+            run.IsBold = true;
+
+            var table = doc.CreateTable(revisionHistory.Count + 1, 4);
+
+            SetCellText(table.GetRow(0).GetCell(0), "Data",11);
+            SetCellText(table.GetRow(0).GetCell(1), "Versão",11);
+            SetCellText(table.GetRow(0).GetCell(2), "Descrição", 11);
+            SetCellText(table.GetRow(0).GetCell(3), "Autor", 11);
+
+            for (int i = 0; i < revisionHistory.Count; i++)
+            {
+                var item = revisionHistory[i];
+                SetCellText(table.GetRow(i + 1).GetCell(0), item.Data.ToString("dd/MM/yyyy"),11);
+                SetCellText(table.GetRow(i + 1).GetCell(1), item.Versao, 11);
+                SetCellText(table.GetRow(i + 1).GetCell(2), item.Descricao, 11);
+                SetCellText(table.GetRow(i + 1).GetCell(3), item.Autor, 11);
+            }
+        }
+
+        private void AddEventsDeliveries(XWPFDocument doc, List<EventDeliveryItem> eventsDeliveries)
+        {
+            //DateTime yesterday = DateTime.Now.AddDays(-1);
+            DateTime yesterday = DateTime.Now;
+
+            XWPFParagraph sectionTitle = doc.CreateParagraph();
+            sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun = sectionTitle.CreateRun();
+            sectionTitleRun.SetText("Eventos / Entregas");
+            sectionTitleRun.IsBold = true;
+            sectionTitleRun.FontSize = 14;
+
+            var groupedEvents = eventsDeliveries
+                .Where(e => e.Status == "Concluído" && e.Conclusao?.Date == yesterday.Date)
+                .GroupBy(e => e.Custom_Sistema)
+                .ToList();
+
+            int systemCounter = 1;
+
+            foreach (var group in groupedEvents)
+            {
+                // Sistema
+                XWPFParagraph paragraph = doc.CreateParagraph();
+                paragraph.Alignment = ParagraphAlignment.LEFT;
+                paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                paragraph.SpacingAfterLines = 1;
+                XWPFRun run = paragraph.CreateRun();
+                run.SetText($"{systemCounter} - {group.Key}");
+                run.IsBold = true;
+                run.FontSize = 10;
+                systemCounter++;
+
+                foreach (var item in group)
+                {
+                    char subCounter = 'a';
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"{subCounter}) Atividade: {item.Title}");
+                    run.FontSize = 10;
+                    subCounter++;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Demanda: {item.WorkItemId}");
+                    run.IsBold = true;
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Abertura: {item.DataAbertura?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Início: {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Previsão: {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Status: {item.Status}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Conclusão: {(item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A")}");
+                    run.FontSize = 10;
+
+                    paragraph.SpacingBetween = 0; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 0;
+                    paragraph.IndentationLeft = 0;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    //run.SetText($"Observação: {item.Observacao}");
+                    run.FontSize = 10;
+
+                    // Ajuste de espaço entre parágrafos
+                    paragraph.SpacingAfter = 0;
+                    paragraph.SpacingBeforeLines = 0;
+                }
+
+                // Ajuste de espaço entre grupos de parágrafos
+                sectionTitle.SpacingAfter = 0;
+                sectionTitle.SpacingBeforeLines = 0;
+            }
+        }
+
+
+        private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
+        {
+            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao" };
+
+            XWPFParagraph sectionTitle = doc.CreateParagraph();
+            sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun = sectionTitle.CreateRun();
+            sectionTitleRun.SetText("Projetos em Andamento");
+            sectionTitleRun.IsBold = true;
+            sectionTitleRun.FontSize = 14;
+
+            var groupedProjects = ongoingProjects
+                .Where(p => validStatuses.Contains(p.Status))
+                .GroupBy(p => p.Custom_Sistema);
+
+            int systemCounter = 1;
+
+            foreach (var group in groupedProjects)
+            {
+                // Sistema
+                XWPFParagraph paragraph = doc.CreateParagraph();
+                paragraph.Alignment = ParagraphAlignment.LEFT;
+                paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                paragraph.SpacingAfterLines = 1;
+                XWPFRun run = paragraph.CreateRun();
+                run.SetText($"{systemCounter} - {group.Key}");
+                run.IsBold = true;
+                run.FontSize = 10;
+                systemCounter++;
+
+                char subCounter = 'a';
+
+                foreach (var item in group)
+                {
+
+                    //paragraph = doc.CreateParagraph();
+                    //paragraph.Alignment = ParagraphAlignment.LEFT;
+
+                    // Recuo para a direita a partir do campo WorkItemId
+
+                    if (item.WorkItemId != default)
+                    {
+                        paragraph.IndentationLeft = 0; // Valor em unidades de 1/20 de ponto, 500 equivale a 5cm
+                    }
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"{subCounter}) Atividade: {item.Title}");
+                    run.FontSize = 10;
+                    subCounter++;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Demanda: {item.WorkItemId}");
+                    run.IsBold = true;
+                    run.FontSize = 10;
+
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Abertura: {item.DataAbertura?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Início: {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Previsão: {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Status: {item.Status}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Conclusão: {(item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A")}");
+                    run.FontSize = 10;
+
+                    paragraph = doc.CreateParagraph();
+                    paragraph.Alignment = ParagraphAlignment.LEFT;
+                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    paragraph.SpacingAfterLines = 1;
+                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    run = paragraph.CreateRun();
+                    run.SetText($"Observação: {item.Observacao}");
+                    run.FontSize = 10;
+
+                    // Ajuste de espaço entre parágrafos
+                    paragraph.SpacingAfter = 0;
+                    paragraph.SpacingBeforeLines = 0;
+                }
+
+                // Ajuste de espaço entre grupos de parágrafos
+                sectionTitle.SpacingAfter = 0;
+                sectionTitle.SpacingBeforeLines = 0;
+            }
+
+        }
+
+
+        // Método para adicionar a seção Custom_Sistema nos Eventos e Entregas
+        private void AddCustomSistemaEventDelivery(XWPFDocument doc, List<EventDeliveryItem> eventsDeliveries)
+        {
+            XWPFParagraph customSistemaTitle = doc.CreateParagraph();
+            customSistemaTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun customSistemaTitleRun = customSistemaTitle.CreateRun();
+            customSistemaTitleRun.SetText("Custom_Sistema - Eventos e Entregas:");
+            customSistemaTitleRun.IsBold = true;
+            customSistemaTitleRun.FontSize = 12;
+
+            foreach (var item in eventsDeliveries)
+            {
+                XWPFParagraph customSistemaItem = doc.CreateParagraph();
+                customSistemaItem.Alignment = ParagraphAlignment.LEFT;
+
+                // Formato customizado para Custom_Sistema: Title - Demanda - Abertura - Início - Previsão - Status - Observação
+                XWPFRun customSistemaItemRun = customSistemaItem.CreateRun();
+                customSistemaItemRun.SetText($"Custom_Sistema: {item.Title} - {item.Status} - {item.DataAbertura?.ToString("dd/MM/yyyy")} - {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")} - {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")} - {(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "N/A")} - {item.Custom_Finalidade}");
+                customSistemaItemRun.FontSize = 11;
+            }
+        }
+
+        // Método para adicionar a seção Custom_Sistema nos Projetos em Andamento
+        private void AddCustomSistemaOngoingProject(XWPFDocument doc, List<ProjectItem> ongoingProjects)
+        {
+            XWPFParagraph customSistemaTitle = doc.CreateParagraph();
+            customSistemaTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun customSistemaTitleRun = customSistemaTitle.CreateRun();
+            customSistemaTitleRun.SetText("Custom_Sistema - Projetos em Andamento:");
+            customSistemaTitleRun.IsBold = true;
+            customSistemaTitleRun.FontSize = 12;
+
+            foreach (var item in ongoingProjects)
+            {
+                XWPFParagraph customSistemaItem = doc.CreateParagraph();
+                customSistemaItem.Alignment = ParagraphAlignment.LEFT;
+
+                // Formato customizado para Custom_Sistema: Title - Demanda - Abertura - Início - Previsão - Status - Observação
+                XWPFRun customSistemaItemRun = customSistemaItem.CreateRun();
+                customSistemaItemRun.SetText($"Custom_Sistema: {item.Title} - {item.Status} - {item.DataAbertura?.ToString("dd/MM/yyyy")} - {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")} - {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")} - {item.Conclusao?.ToString("dd/MM/yyyy")} - {item.Observacao}");
+                customSistemaItemRun.FontSize = 11;
+            }
+        }
+    }
+}

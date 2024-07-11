@@ -1,0 +1,145 @@
+@model GestaoDemandas.Models.DailyReportViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Revisão Diária - @DateTime.Now.ToString("dd/MM/yyyy")</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 27px; /* Ajuste conforme necessário */
+            font-weight: bold;
+        }
+
+        h3 {
+            font-size: 20px; /* Ajuste conforme necessário */
+            margin-top: 10px;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 28%; text-align: center; vertical-align: middle;">
+                <img src="@Url.Content("~/Content/Imagens/logo-prodesp.jpg")" alt="Logo Prodesp" width="350">
+            </td>
+            <td style="width: 43%; text-align: center;">
+                <h1>Revisão Diária - @DateTime.Now.ToString("dd/MM/yyyy")</h1>
+                <h3>Projeto SEDUC</h3>
+            </td>
+            <td style="width: 28%; text-align: center; vertical-align: middle;">
+                <img src="@Url.Content("~/Content/Imagens/logo-seduc.jpg")" alt="Logo SEDUC" width="350">
+            </td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <h2>Histórico de Revisões</h2>
+    <table>
+        <tr>
+            <th>Data</th>
+            <th>Versão</th>
+            <th>Descrição</th>
+            <th>Autor</th>
+        </tr>
+        @foreach (var item in Model.RevisionHistory)
+        {
+            <tr>
+                <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                <td>@item.Versao</td>
+                <td>@item.Descricao</td>
+                <td>@item.Autor</td>
+            </tr>
+        }
+    </table>
+
+    <h2>Eventos / Entregas</h2>
+    <table>
+        <tr>
+            <th>Sistema</th> 
+            <th>Demanda</th>
+            <th>Atividade</th>
+            <th>Abertura</th>
+            <th>Início</th>
+            <th>Status</th>
+            <th>Previsão</th>
+            <th>Observação</th>
+            <th>Conclusão</th>
+        </tr>
+        @foreach (var item in Model.EventsDeliveries)
+        {
+            <tr>
+                <td>@item.Custom_Sistema</td> 
+                <td>@item.WorkItemId</td>
+                <td>@item.Title</td>
+                <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>
+                    @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
+                    {
+                        @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy");
+                    }
+                </td>
+                <td>@item.Status</td>
+                <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@item.Observacao</td>
+                <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
+            </tr>
+        }
+    </table>
+
+    <h2>Principais Projetos em Andamento</h2>
+    <table>
+        <tr>
+            <th>Sistema</th>
+            <th>Demanda</th>
+            <th>Atividade</th>
+            <th>Abertura</th>
+            <th>Início</th>
+            <th>Status</th>
+            <th>Previsão</th>
+            <th>Observação</th>
+            <th>Conclusão</th>
+        </tr>
+        @foreach (var item in Model.OngoingProjects)
+        {
+            <tr>
+                <td>@item.Custom_Sistema</td>
+                <td>@item.WorkItemId</td>
+                <td>@item.Title</td>
+                <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>
+                    @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
+                    {
+                        @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy");
+                    }
+                </td>
+                <td>@item.Status</td>
+                <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@item.Observacao</td>
+                <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
+            </tr>
+        }
+    </table>
+
+    <div style="margin-top: 20px;">
+        <a href="@Url.Action("Index", "Home")">Voltar à Página Inicial</a>
+        <button onclick="window.location.href='@Url.Action("GenerateDocx", new { model = Model })'">Gerar Arquivo</button>
+    </div>
+</body>
+    </html>

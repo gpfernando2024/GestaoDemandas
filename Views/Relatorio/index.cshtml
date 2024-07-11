@@ -1,0 +1,59 @@
+@model GestaoDemandas.Models.DailyReportViewModel
+
+@{
+    ViewBag.Title = "Revisão Diária";
+}
+
+<h2>@Model.ReportTitle</h2>
+
+<p>@Model.ProjectTitle</p>
+
+<h3>Histórico de Revisões</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Versão</th>
+            <th>Descrição</th>
+            <th>Autor</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.RevisionHistory)
+        {
+            <tr>
+                <td>@item.Data</td>
+                <td>@item.Versao</td>
+                <td>@item.Descricao</td>
+                <td>@item.Autor</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div style="page-break-before: always;"></div> <!-- Inicia uma nova página -->
+
+<h3>Eventos / Entregas</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>ID</th>
+            <th>Abertura</th>
+            <th>Início</th>
+            <th>Previsão</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.EventsDeliveries)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.WorkItemId</td>
+                <td>@(item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue ? item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+            </tr>
+        }
+    </tbody>
+</table>

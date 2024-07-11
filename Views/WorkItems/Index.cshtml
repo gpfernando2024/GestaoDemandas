@@ -1,0 +1,154 @@
+@model IEnumerable<GestaoDemandas.Models.WorkItem>
+
+@{
+    // Título padrão
+    ViewBag.Title = "Lista de Atividades";
+
+    // Verifica se um sistema específico foi selecionado no filtro
+    string sistemaSelecionado = Request.QueryString["searchSistema"];
+
+    // Se um sistema específico foi selecionado, atualiza o título da página
+    if (!string.IsNullOrEmpty(sistemaSelecionado))
+    {
+        ViewBag.Title = $"Lista de Atividades - {sistemaSelecionado}";
+    }
+
+    var currentDate = DateTime.Now;
+}
+
+<h3>@ViewBag.Title</h3>
+
+<form method="get" action="@Url.Action("Index")">
+    <table class="table table-bordered">
+        <tr>
+            <td>
+                <label for="searchId">ID</label>
+                <input type="text" id="searchId" name="searchId" class="form-control" value="@ViewBag.SearchId" placeholder="" />
+            </td>
+            <td>
+                <label for="searchStatus">Status</label>
+                <select id="searchStatus" name="searchStatus" class="form-control">
+                    <option value="">Selecione o Status</option>
+                    @foreach (var status in Model.Select(item => item.State).Distinct())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <label for="searchSistema">Sistema</label>
+                <select id="searchSistema" name="searchSistema" class="form-control">
+                    <option value="">Selecione o Sistema</option>
+                    <option value="Transporte Escolar">Transporte Escolar</option>
+                    <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
+                    <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
+                    <!-- Adicione mais sistemas conforme necessário -->
+                </select>
+            </td>
+            <td>
+                <label for="searchPrioridade">Prioridade</label>
+                <select id="searchPrioridade" name="searchPrioridade" class="form-control">
+                    <option value="">Selecione a Prioridade</option>
+                    @foreach (var prioridade in Model.Select(item => item.Custom_Prioridade_Epic).Distinct())
+                    {
+                        <option value="@prioridade">@prioridade</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <label for="searchDataInicio">Início Atendimento</label>
+                <input type="date" id="searchDataInicio" name="searchDataInicio" class="form-control" value="@ViewBag.SearchDataInicio" placeholder="__/__/____" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="searchDataConclusao">Data Conclusão</label>
+                <input type="date" id="searchDataConclusao" name="searchDataConclusao" class="form-control" value="@ViewBag.SearchDataConclusao" placeholder="__/__/____" />
+            </td>
+            <td colspan="3" class="align-bottom">
+                <button type="submit" class="btn btn-primary mr-2 mt-4">Pesquisar</button>
+                <a href="@Url.Action("Index", "WorkItems", new { clear = true })" class="btn btn-secondary mr-2 mt-4">Limpar</a>
+                <a href="@Url.Action("Index", "Home", new { clear = true })" class="btn btn-primary mt-4">Voltar</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Atividade</th>
+            <th>Status</th>
+            <th>Prioridade</th>
+            <th>Finalidade</th>
+            <th>Abertura</th> <!-- Nova coluna para Data Abertura -->
+            <th>Início</th>
+            <th>Entrega</th>
+            <th>Fechamento</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Take(10))
+        {
+            var entregaClass = "";
+            if (item.State == "Desenvolvimento" && item.Custom_DataPrevistaDaEntrega.HasValue)
+            {
+                if (item.Custom_DataPrevistaDaEntrega.Value.Date == currentDate.Date)
+                {
+                    entregaClass = "table-warning";
+                }
+                else if (item.Custom_DataPrevistaDaEntrega.Value.Date < currentDate.Date)
+                {
+                    entregaClass = "table-danger";
+                }
+            }
+
+            <tr class="@entregaClass">
+                <td>@item.WorkItemId</td>
+                <td>@item.Title</td>
+                <td>@item.State</td>
+                <td>@item.Custom_Prioridade_Epic</td>
+                <td>@item.Custom_Finalidade</td>
+                <td>@(item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != default(DateTime) ? item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
+                <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue ? item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.ToString("dd/MM/yyyy") : "")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchSistema = sistemaSelecionado })" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+        </li>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, searchSistema = sistemaSelecionado })">@i</a>
+            </li>
+        }
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchSistema = sistemaSelecionado })" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd/mm/yy",
+            showOn: "focus",
+            showOtherMonths: true,
+            selectOtherMonths: true
+        }).mask("99/99/9999", { placeholder: "__/__/____" });
+    });
+</script>
