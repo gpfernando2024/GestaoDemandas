@@ -72,7 +72,7 @@
     <h2>Eventos / Entregas</h2>
     <table>
         <tr>
-            <th>Sistema</th> 
+            <th>Sistema</th>
             <th>Demanda</th>
             <th>Atividade</th>
             <th>Abertura</th>
@@ -84,24 +84,34 @@
         </tr>
         @foreach (var item in Model.EventsDeliveries)
         {
-            <tr>
-                <td>@item.Custom_Sistema</td> 
-                <td>@item.WorkItemId</td>
-                <td>@item.Title</td>
-                <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>
-                    @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
-                    {
-                        @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy");
-                    }
-                </td>
-                <td>@item.Status</td>
-                <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>@item.Observacao</td>
-                <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
-            </tr>
+            if (item.Conclusao.HasValue &&
+           DateTime.TryParseExact(item.Conclusao.Value.ToString("dd/MM/yyyy"),
+                                  "dd/MM/yyyy",
+                                  System.Globalization.CultureInfo.InvariantCulture,
+                                  System.Globalization.DateTimeStyles.None,
+                                  out DateTime conclusaoData) &&
+           conclusaoData.Date == DateTime.Today)
+            {
+
+                <tr>
+                    <td>@item.Custom_Sistema</td>
+                    <td>@item.WorkItemId</td>
+                    <td>@item.Title</td>
+                    <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
+                    <td>
+                        @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
+                        {
+                            @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy");
+                        }
+                    </td>
+                    <td>@item.Status</td>
+                    <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                    <td>@item.Observacao</td>
+                    <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
+                </tr>
+            }
         }
-    </table>
+        </table>
 
     <h2>Principais Projetos em Andamento</h2>
     <table>

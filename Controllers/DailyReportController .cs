@@ -216,10 +216,21 @@ namespace GestaoDemandas.Controllers
                     }
 
                     // Verificar se a data de conclusão é igual à data atual
-                    if (eventItem.Conclusao.HasValue && eventItem.Conclusao.Value.Date == DateTime.Today)
+                    if (eventItem.Conclusao.HasValue)
                     {
-                        items.Add(eventItem);
+                        DateTime conclusaoData;
+                        bool isValidFormat = DateTime.TryParseExact(eventItem.Conclusao.Value.ToString("dd/MM/yyyy"),
+                                                                    "dd/MM/yyyy",
+                                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                                    System.Globalization.DateTimeStyles.None,
+                                                                    out conclusaoData);
+
+                        if (isValidFormat && conclusaoData.Date == DateTime.Today)
+                        {
+                            items.Add(eventItem);
+                        }
                     }
+
                 }
             }
             return items;
@@ -437,9 +448,17 @@ namespace GestaoDemandas.Controllers
             sectionTitleRun.FontSize = 14;
 
             var groupedEvents = eventsDeliveries
-                .Where(e => e.Status == "Concluído" && e.Conclusao?.Date == yesterday.Date)
+                .Where(e => e.Status == "Concluído" &&
+                            e.Conclusao.HasValue &&
+                            DateTime.TryParseExact(e.Conclusao.Value.ToString("dd/MM/yyyy"),
+                                                   "dd/MM/yyyy",
+                                                   System.Globalization.CultureInfo.InvariantCulture,
+                                                   System.Globalization.DateTimeStyles.None,
+                                                   out DateTime conclusaoData) &&
+                            conclusaoData.Date == DateTime.Today)
                 .GroupBy(e => e.Custom_Sistema)
                 .ToList();
+
 
             int systemCounter = 1;
 
@@ -460,87 +479,41 @@ namespace GestaoDemandas.Controllers
                 {
                     char subCounter = 'a';
 
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"{subCounter}) Atividade: {item.Title}");
-                    run.FontSize = 10;
+                    // Título da atividade
+                    XWPFParagraph activityTitleParagraph = doc.CreateParagraph();
+                    activityTitleParagraph.Alignment = ParagraphAlignment.LEFT;
+                    activityTitleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    activityTitleParagraph.SpacingAfterLines = 1;
+                    activityTitleParagraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    XWPFRun activityTitleRun = activityTitleParagraph.CreateRun();
+                    activityTitleRun.SetText($"{subCounter}) Atividade: {item.Title}");
+                    activityTitleRun.FontSize = 10;
                     subCounter++;
 
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Demanda: {item.WorkItemId}");
-                    run.IsBold = true;
-                    run.FontSize = 10;
+                    // Demanda
+                    XWPFParagraph demandParagraph = doc.CreateParagraph();
+                    demandParagraph.Alignment = ParagraphAlignment.LEFT;
+                    demandParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    demandParagraph.SpacingAfterLines = 1;
+                    demandParagraph.IndentationLeft = 567; // 10cm in twips (2 cm = 1134 twips)
+                    XWPFRun demandRun = demandParagraph.CreateRun();
+                    demandRun.SetText($"• Demanda: {item.WorkItemId}");
+                    demandRun.IsBold = true;
+                    demandRun.FontSize = 10;
+                    
 
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Abertura: {item.DataAbertura?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Início: {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Previsão: {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Status: {item.Status}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Conclusão: {(item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A")}");
-                    run.FontSize = 10;
-
-                    paragraph.SpacingBetween = 0; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 0;
-                    paragraph.IndentationLeft = 0;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    //run.SetText($"Observação: {item.Observacao}");
-                    run.FontSize = 10;
+                    // Informações adicionais
+                    //CreateInfoParagraph("Demanda", item.WorkItemId.ToString());
+                    CreateInfoParagraph("Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("Status", item.Status);
+                    CreateInfoParagraph("Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph("Observação", item.Observacao);
 
                     // Ajuste de espaço entre parágrafos
-                    paragraph.SpacingAfter = 0;
-                    paragraph.SpacingBeforeLines = 0;
+                    demandParagraph.SpacingAfter = 0;
+                    demandParagraph.SpacingBeforeLines = 0;
                 }
 
                 // Ajuste de espaço entre grupos de parágrafos
@@ -549,6 +522,27 @@ namespace GestaoDemandas.Controllers
             }
         }
 
+        // Função auxiliar para criar parágrafos de informações adicionais
+        void CreateInfoParagraph(string title, string value)
+        {
+            // Declare e inicialize a variável doc antes do loop
+            XWPFDocument doc = new XWPFDocument();
+
+            XWPFParagraph paragraph = doc.CreateParagraph();
+            paragraph.Alignment = ParagraphAlignment.LEFT;
+            paragraph.SpacingBetween = 0; // Espaçamento simples entre linhas
+            paragraph.SpacingAfterLines = 0;
+            paragraph.IndentationLeft = 1134; // 10cm in twips (2 cm = 1134 twips)
+
+            // Adicionar marcadores (bullet points) aos parágrafos de informações adicionais usando Unicode
+            XWPFRun run = paragraph.CreateRun();
+            run.SetText("\u2022"); // Unicode para um ponto (bullet point)
+            run.IsBold = true;
+            run.FontSize = 10;
+            run = paragraph.CreateRun();
+            run.SetText($" {title}: {value}");
+            run.FontSize = 10;
+        }
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
@@ -595,80 +589,36 @@ namespace GestaoDemandas.Controllers
                         paragraph.IndentationLeft = 0; // Valor em unidades de 1/20 de ponto, 500 equivale a 5cm
                     }
 
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"{subCounter}) Atividade: {item.Title}");
-                    run.FontSize = 10;
+                    // Título da atividade
+                    XWPFParagraph activityTitleParagraph = doc.CreateParagraph();
+                    activityTitleParagraph.Alignment = ParagraphAlignment.LEFT;
+                    activityTitleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    activityTitleParagraph.SpacingAfterLines = 1;
+                    activityTitleParagraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    XWPFRun activityTitleRun = activityTitleParagraph.CreateRun();
+                    activityTitleRun.SetText($"{subCounter}) Atividade: {item.Title}");
+                    activityTitleRun.FontSize = 10;
                     subCounter++;
 
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Demanda: {item.WorkItemId}");
-                    run.IsBold = true;
-                    run.FontSize = 10;
+                    // Demanda
+                    XWPFParagraph demandParagraph = doc.CreateParagraph();
+                    demandParagraph.Alignment = ParagraphAlignment.LEFT;
+                    demandParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    demandParagraph.SpacingAfterLines = 1;
+                    demandParagraph.IndentationLeft = 1134; // 10cm in twips (2 cm = 1134 twips)
+                    XWPFRun demandRun = demandParagraph.CreateRun();
+                    demandRun.SetText($"• Demanda: {item.WorkItemId}");
+                    demandRun.IsBold = true;
+                    demandRun.FontSize = 10;
 
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Abertura: {item.DataAbertura?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Início: {item.DataInicioAtendimento?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Previsão: {item.DataPrevistaEntrega?.ToString("dd/MM/yyyy")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Status: {item.Status}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Conclusão: {(item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A")}");
-                    run.FontSize = 10;
-
-                    paragraph = doc.CreateParagraph();
-                    paragraph.Alignment = ParagraphAlignment.LEFT;
-                    paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
-                    paragraph.SpacingAfterLines = 1;
-                    paragraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
-                    run = paragraph.CreateRun();
-                    run.SetText($"Observação: {item.Observacao}");
-                    run.FontSize = 10;
+                    // Informações adicionais
+                    //CreateInfoParagraph("Demanda", item.WorkItemId.ToString());
+                    CreateInfoParagraph("• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph("• Status", item.Status);
+                    CreateInfoParagraph("• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph("• Observação", item.Observacao);
 
                     // Ajuste de espaço entre parágrafos
                     paragraph.SpacingAfter = 0;
