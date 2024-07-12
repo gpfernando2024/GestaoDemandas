@@ -18,6 +18,7 @@ using NPOI.OpenXmlFormats.Wordprocessing;
 using NPOI.XWPF.Model;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.WebControls;
+using NPOI.SS.Formula.Functions;
 
 namespace GestaoDemandas.Controllers
 {
@@ -183,7 +184,7 @@ namespace GestaoDemandas.Controllers
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado é diferente de "Concluido"
-                if (state != "Concluido" &&
+                if (state == "Concluido" &&
                     (customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                 {
                     var eventItem = new EventDeliveryItem
@@ -216,6 +217,7 @@ namespace GestaoDemandas.Controllers
                     }
 
                     // Verificar se a data de conclusão é igual à data atual
+                    
                     if (eventItem.Conclusao.HasValue)
                     {
                         DateTime conclusaoData;
@@ -230,7 +232,7 @@ namespace GestaoDemandas.Controllers
                             items.Add(eventItem);
                         }
                     }
-
+                    
                 }
             }
             return items;
@@ -438,7 +440,8 @@ namespace GestaoDemandas.Controllers
         private void AddEventsDeliveries(XWPFDocument doc, List<EventDeliveryItem> eventsDeliveries)
         {
             //DateTime yesterday = DateTime.Now.AddDays(-1);
-            DateTime yesterday = DateTime.Now;
+            //DateTime yesterday = DateTime.Now;
+            DateTime today = DateTime.Now.Date;  // Data atual
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();
             sectionTitle.Alignment = ParagraphAlignment.LEFT;
@@ -448,17 +451,34 @@ namespace GestaoDemandas.Controllers
             sectionTitleRun.FontSize = 14;
 
             var groupedEvents = eventsDeliveries
-                .Where(e => e.Status == "Concluído" &&
-                            e.Conclusao.HasValue &&
-                            DateTime.TryParseExact(e.Conclusao.Value.ToString("dd/MM/yyyy"),
-                                                   "dd/MM/yyyy",
-                                                   System.Globalization.CultureInfo.InvariantCulture,
-                                                   System.Globalization.DateTimeStyles.None,
-                                                   out DateTime conclusaoData) &&
-                            conclusaoData.Date == DateTime.Today)
-                .GroupBy(e => e.Custom_Sistema)
-                .ToList();
+               .Where(e => e.Status == "Concluido" &&
+                           e.Custom_Sistema == "Transporte Escolar" &&
+                           e.Conclusao.HasValue &&
+                           e.Conclusao.Value.Date == today)  // Verifique a data específica de conclusão
+               .GroupBy(e => e.Custom_Sistema);
+            /*
+            var groupedEvents = eventsDeliveries
+                .Where(e => e.Status == "Concluído")
+                .GroupBy(p => p.Custom_Sistema);
+            */
 
+            // Verificando se há eventos agrupados
+            if (groupedEvents.Any())
+            {
+                foreach (var group in groupedEvents)
+                {
+                    Console.WriteLine($"Sistema: {group.Key}");
+                    foreach (var eventDelivery in group)
+                    {
+                        // Imprimir os campos relevantes do evento
+                        Console.WriteLine($"Evento ID: {eventDelivery.WorkItemId}, Conclusão: {eventDelivery.Conclusao}");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nenhum evento encontrado para os critérios especificados.");
+            }
 
             int systemCounter = 1;
 
@@ -495,21 +515,20 @@ namespace GestaoDemandas.Controllers
                     demandParagraph.Alignment = ParagraphAlignment.LEFT;
                     demandParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
                     demandParagraph.SpacingAfterLines = 1;
-                    demandParagraph.IndentationLeft = 567; // 10cm in twips (2 cm = 1134 twips)
+                    demandParagraph.IndentationLeft = 1134; // 10cm in twips (2 cm = 1134 twips)
                     XWPFRun demandRun = demandParagraph.CreateRun();
                     demandRun.SetText($"• Demanda: {item.WorkItemId}");
                     demandRun.IsBold = true;
                     demandRun.FontSize = 10;
-                    
 
                     // Informações adicionais
-                    //CreateInfoParagraph("Demanda", item.WorkItemId.ToString());
-                    CreateInfoParagraph("Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("Status", item.Status);
-                    CreateInfoParagraph("Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph("Observação", item.Observacao);
+                    CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Status", item.Status);
+                    CreateInfoParagraph(doc, "• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+
 
                     // Ajuste de espaço entre parágrafos
                     demandParagraph.SpacingAfter = 0;
@@ -523,25 +542,16 @@ namespace GestaoDemandas.Controllers
         }
 
         // Função auxiliar para criar parágrafos de informações adicionais
-        void CreateInfoParagraph(string title, string value)
+        private void CreateInfoParagraph(XWPFDocument doc, string title, string value)
         {
-            // Declare e inicialize a variável doc antes do loop
-            XWPFDocument doc = new XWPFDocument();
-
-            XWPFParagraph paragraph = doc.CreateParagraph();
-            paragraph.Alignment = ParagraphAlignment.LEFT;
-            paragraph.SpacingBetween = 0; // Espaçamento simples entre linhas
-            paragraph.SpacingAfterLines = 0;
-            paragraph.IndentationLeft = 1134; // 10cm in twips (2 cm = 1134 twips)
-
-            // Adicionar marcadores (bullet points) aos parágrafos de informações adicionais usando Unicode
-            XWPFRun run = paragraph.CreateRun();
-            run.SetText("\u2022"); // Unicode para um ponto (bullet point)
-            run.IsBold = true;
-            run.FontSize = 10;
-            run = paragraph.CreateRun();
-            run.SetText($" {title}: {value}");
-            run.FontSize = 10;
+            XWPFParagraph infoParagraph = doc.CreateParagraph();
+            infoParagraph.Alignment = ParagraphAlignment.LEFT;
+            infoParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+            infoParagraph.SpacingAfterLines = 1;
+            infoParagraph.IndentationLeft = 1134    ; // 5cm in twips (1 cm = 567 twips)
+            XWPFRun infoRun = infoParagraph.CreateRun();
+            infoRun.SetText($"{title}: {value}");
+            infoRun.FontSize = 10;
         }
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
@@ -612,13 +622,13 @@ namespace GestaoDemandas.Controllers
                     demandRun.FontSize = 10;
 
                     // Informações adicionais
-                    //CreateInfoParagraph("Demanda", item.WorkItemId.ToString());
-                    CreateInfoParagraph("• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph("• Status", item.Status);
-                    CreateInfoParagraph("• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph("• Observação", item.Observacao);
+                    CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Status", item.Status);
+                    CreateInfoParagraph(doc, "• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+
 
                     // Ajuste de espaço entre parágrafos
                     paragraph.SpacingAfter = 0;
