@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static NPOI.HSSF.Util.HSSFColor;
 
 namespace GestaoDemandas.Models
 {
@@ -37,6 +38,13 @@ namespace GestaoDemandas.Models
         public string Custom_Finalidade { get; set; }
         public DateTime? Conclusao { get; set; }
         public string Observacao { get; set; }
+        public string DescriçãoProjeto { get; set; }
+        public string GerênciaProdesp { get; set; }
+        public string EntregaEstratégica { get; set; }
+        public string SemanaProdesp { get; set; }
+        public string NomeProjeto { get; set; }
+        public string Finalidade { get; set; }
+        public DateTime? DataRealHomologação { get; set; }
     }
     public class ProjectItem
     {
@@ -51,5 +59,12 @@ namespace GestaoDemandas.Models
         public string Observacao { get; set; }
         public DateTime? Conclusao { get; set; }
         public DateTime? DataFechamento { get; set; }
+        public string DescriçãoProjeto { get; set; }
+        public string GerênciaProdesp { get; set; }
+        public string EntregaEstratégica { get; set; }
+        public string SemanaProdesp { get; set; }
+        public string NomeProjeto { get; set; }
+        public string Finalidade { get; set; }
+        public DateTime? DataRealHomologação { get; set; }
     }
 }
