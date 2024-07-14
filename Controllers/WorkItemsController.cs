@@ -6,11 +6,40 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
 using DocumentFormat.OpenXml.Wordprocessing;
 using GestaoDemandas.Models;
 using Newtonsoft.Json;
+using static NPOI.SS.Formula.Functions.Countif;
+/*
+Campos DevOps Analytics
+    Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a = Data Real da Homologação
+    Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c = GerênciaProdesp
+    Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e = DescriçãoProjeto (Descrição do Projeto, relacionada a sessão Gestão Prodesp)
+    Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d = DataAbertura
+    Custom_DataInicioPrevisto = DataInicioPrevisto
+    Custom_DataPrevistaDaEntrega = DataPrevistaDaEntrega
+    Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9 = Entrega Estratégica
+    Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef = DataFechamento
+    Custom_EntregaValor = EntregaValor (Entrega de valor para a sessão Gestão Prodesp)
+    Custom_Finalidade = Finalidade
+    Custom_NomeProjeto = NomeProjeto
+    Custom_Prioridade_Epic = Prioridade_Epic
+    Custom_SemanaProdesp = SemanaProdesp
+    Custom_Sistema = Sistema
+    Custom_DataInicioAtendimento = DataInicioAtendimento
+    Custom_ClienteProdesp = CoordenadoriaProdesp
+    Title = Title
+    WorkItemType = Work Item Type
+    CreatedDate = Created Date 
+    State = State
+    WorkItemId = WorkItemId
+    Risk = Risk
+    Custom_DataInicioPrevisto = DataInicioPrevisto
+    Custom_GerenteProjeto = GerenteProjeto
+*/
 
 namespace GestaoDemandas.Controllers
 {
