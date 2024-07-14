@@ -19,6 +19,7 @@ using NPOI.XWPF.Model;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.WebControls;
 using NPOI.SS.Formula.Functions;
+using System.Drawing;
 
 /*
     Campos DevOps Analytics
@@ -87,7 +88,7 @@ namespace GestaoDemandas.Controllers
                     titleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
                     titleParagraph.SpacingAfterLines = 1;
                     XWPFRun titleRun = titleParagraph.CreateRun();
-                    titleRun.SetText("Revisão Diária");
+                    //titleRun.SetText("Revisão Diária");
                     titleRun.IsBold = false;
                     titleRun.FontSize = 22;  // Reduzido de 11 para 9
 
@@ -412,9 +413,9 @@ namespace GestaoDemandas.Controllers
 
             // Define a largura da tabela para 100% da largura da página em twips
             headerTable.Width = (int)pageWidthTwips;
-            headerTable.SetColumnWidth(0, (ulong)(pageWidthTwips / 2));
-            headerTable.SetColumnWidth(1, (ulong)(pageWidthTwips / 2));
-            headerTable.SetColumnWidth(2, (ulong)(pageWidthTwips / 2));
+            headerTable.SetColumnWidth(0, (ulong)(pageWidthTwips / 3));
+            headerTable.SetColumnWidth(1, (ulong)(pageWidthTwips / 3));
+            headerTable.SetColumnWidth(2, (ulong)(pageWidthTwips / 3));
 
             // Adiciona a imagem à célula do cabeçalho central
             XWPFTableCell cell = headerTable.GetRow(0).GetCell(1); // A célula central da tabela
@@ -433,6 +434,7 @@ namespace GestaoDemandas.Controllers
             titleRun.SetText($"Revisão Diária - {currentDate}");
             titleRun.IsBold = false;
             titleRun.FontSize = 9;  // Reduzido de 11 para 9 
+
             // Adiciona a segunda imagem (substitua com o caminho correto da sua imagem)
             AddImageToCell(doc, headerRow.GetCell(2), @"F:\Sistemas\GestaoDemandas\Content\Imagens\Logo-SEDUC.jpg", 150,70);
         }
@@ -505,6 +507,44 @@ namespace GestaoDemandas.Controllers
             sectionTitleRun.IsBold = true;
             sectionTitleRun.FontSize = 14;
 
+            // Crie um estilo para o parágrafo
+            CT_PPr pPr = sectionTitle.GetCTP().AddNewPPr();
+            CT_Shd shd = pPr.AddNewShd();
+            shd.val = ST_Shd.clear;
+            shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
+
+            // Linha 2: Eventos em andamento na SEDUC
+            XWPFParagraph sectionTitle2 = doc.CreateParagraph();
+            sectionTitle2.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun2 = sectionTitle2.CreateRun();
+            sectionTitleRun2.SetText("Eventos em andamento na SEDUC:");
+            sectionTitleRun2.IsBold = true;
+            sectionTitleRun2.FontSize = 10;
+
+            // Defina a cor de fundo (azul claro)
+            CT_PPr pPr2 = sectionTitle2.GetCTP().AddNewPPr();
+            CT_Shd shd2 = pPr2.AddNewShd();
+            shd2.val = ST_Shd.clear;
+            shd2.fill = "##E7EFF9"; // Cor azul em hexadecimal
+
+            // Linha 3: Entregas do dia
+            XWPFParagraph sectionTitle3 = doc.CreateParagraph();
+            sectionTitle3.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun3 = sectionTitle3.CreateRun();
+            sectionTitleRun3.SetText("Entregas do dia:");
+            sectionTitleRun3.IsBold = true;
+            sectionTitleRun3.FontSize = 10;
+
+            // Defina a cor de fundo (azul claro)
+            CT_PPr pPr3 = sectionTitle3.GetCTP().AddNewPPr();
+            CT_Shd shd3 = pPr3.AddNewShd();
+            shd3.val = ST_Shd.clear;
+            shd3.fill = "##E7EFF9"; // Cor azul em hexadecimal
+
+            /*
+            Eventos em andamento na SEDUC:
+            Entregas do dia:
+            */
             var groupedEvents = eventsDeliveries
                .Where(e => e.Status == "Concluido" &&
                            e.Custom_Sistema == "Transporte Escolar" &&
@@ -619,6 +659,12 @@ namespace GestaoDemandas.Controllers
             sectionTitleRun.SetText("Projetos em Andamento");
             sectionTitleRun.IsBold = true;
             sectionTitleRun.FontSize = 14;
+
+            // Crie um estilo para o parágrafo
+            CT_PPr pPr = sectionTitle.GetCTP().AddNewPPr();
+            CT_Shd shd = pPr.AddNewShd();
+            shd.val = ST_Shd.clear;
+            shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
 
             var groupedProjects = ongoingProjects
                 .Where(p => validStatuses.Contains(p.Status))
