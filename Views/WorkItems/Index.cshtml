@@ -29,10 +29,14 @@
                 <label for="searchStatus">Status</label>
                 <select id="searchStatus" name="searchStatus" class="form-control">
                     <option value="">Selecione o Status</option>
-                    @foreach (var status in Model.Select(item => item.State).Distinct())
-                    {
-                        <option value="@status">@status</option>
-                    }
+                    <option value="Concluido">Concluido</option>
+                    <option value="Aberto">Aberto</option>
+                    <option value="Desenvolvimento">Desenvolvimento</option>
+                    <option value="Suspenso-Temp">Suspenso-Temp</option>
+                    <option value="Suspenso">Suspenso</option>
+                    <option value="Análise">Análise</option>
+                    <option value="Deploy Producao">Deploy Producao</option>
+                    <option value="Aguardando Solicitante">Aguardando Solicitante</option>
                 </select>
             </td>
             <td>
@@ -49,10 +53,10 @@
                 <label for="searchPrioridade">Prioridade</label>
                 <select id="searchPrioridade" name="searchPrioridade" class="form-control">
                     <option value="">Selecione a Prioridade</option>
-                    @foreach (var prioridade in Model.Select(item => item.Custom_Prioridade_Epic).Distinct())
-                    {
-                        <option value="@prioridade">@prioridade</option>
-                    }
+                    <option value="Baixa">Baixa</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Altissima">Altissima</option>
                 </select>
             </td>
             <td>

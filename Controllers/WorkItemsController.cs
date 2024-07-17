@@ -133,12 +133,12 @@ namespace GestaoDemandas.Controllers
                     workItems = workItems.Where(w => w.WorkItemId.ToString().Contains(searchId)).ToList();
                 }
 
-                if (!string.IsNullOrEmpty(searchDataInicio) && DateTime.TryParseExact(searchDataInicio, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataInicio))
+                if (!string.IsNullOrEmpty(searchDataInicio) && DateTime.TryParseExact(searchDataInicio, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataInicio))
                 {
                     workItems = workItems.Where(w => w.Custom_DataInicioAtendimento.HasValue && w.Custom_DataInicioAtendimento.Value.Date == parsedDataInicio.Date).ToList();
                 }
 
-                if (!string.IsNullOrEmpty(searchDataFechamento) && DateTime.TryParseExact(searchDataFechamento, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataFechamento))
+                if (!string.IsNullOrEmpty(searchDataFechamento) && DateTime.TryParseExact(searchDataFechamento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataFechamento))
                 {
                     workItems = workItems.Where(w => w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue && w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.Date == parsedDataFechamento.Date).ToList();
                 }
