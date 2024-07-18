@@ -424,8 +424,12 @@ namespace GestaoDemandas.Controllers
 
             XWPFTableRow headerRow = headerTable.GetRow(0);
 
-            // Adiciona a primeira imagem (substitua com o caminho correto da sua imagem)
-            AddImageToCell(doc, headerRow.GetCell(0), @"F:\Sistemas\GestaoDemandas\Content\Imagens\Logo-Prodesp.jpg", 150,70);
+            // Adiciona a primeira imagem (usando recursos incorporados)
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Properties.Resources.Logo_Prodesp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                AddImageToCell(doc, headerRow.GetCell(0), ms.ToArray(), 150, 70);
+            }
 
             // Adiciona o título "Revisão Diária - data atual" centralizado na célula
             XWPFParagraph titleParagraph = headerRow.GetCell(1).AddParagraph();
@@ -435,35 +439,24 @@ namespace GestaoDemandas.Controllers
             titleRun.IsBold = false;
             titleRun.FontSize = 9;  // Reduzido de 11 para 9 
 
-            // Adiciona a segunda imagem (substitua com o caminho correto da sua imagem)
-            AddImageToCell(doc, headerRow.GetCell(2), @"F:\Sistemas\GestaoDemandas\Content\Imagens\Logo-SEDUC.jpg", 150,70);
+            // Adiciona a segunda imagem (usando recursos incorporados)
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Properties.Resources.Logo_SEDUC.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                AddImageToCell(doc, headerRow.GetCell(2), ms.ToArray(), 150, 70);
+            }
         }
 
-        private void AddImageToCell(XWPFDocument doc, XWPFTableCell cell, string imagePath, int imageWidthEMUs, int width)
+        private void AddImageToCell(XWPFDocument doc, XWPFTableCell cell, byte[] imageBytes, int width, int height)
         {
-            // Remove parágrafos existentes na célula
-            cell.RemoveParagraph(0);
-
-            // Cria um parágrafo na célula
-            XWPFParagraph paragraph = cell.AddParagraph();
-
-            // Cria um run no parágrafo
+            XWPFParagraph paragraph = cell.Paragraphs[0];
             XWPFRun run = paragraph.CreateRun();
-
-            try
+            using (MemoryStream ms = new MemoryStream(imageBytes))
             {
-                // Abre o arquivo de imagem
-                using (FileStream imgStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
-                {
-                    // Adiciona a imagem ao run com redimensionamento para a largura desejada
-                    run.AddPicture(imgStream, (int)PictureType.JPEG, imagePath, Units.ToEMU(imageWidthEMUs), Units.ToEMU(width * 0.6));
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro ao carregar imagem: {ex.Message}");
+                run.AddPicture(ms, (int)PictureType.JPEG, "image.jpg", Units.ToEMU(width), Units.ToEMU(height));
             }
         }
+
 
         private void AddRevisionHistory(XWPFDocument doc, List<RevisionHistoryItem> revisionHistory)
         {
