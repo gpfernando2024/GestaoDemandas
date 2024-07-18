@@ -239,6 +239,9 @@
     <Content Include="Content\Imagens\Logo SEDUC.jpg" />
     <None Include="Content\Imagens\Logo-Prodesp.jpg" />
     <None Include="Content\Imagens\Logo-SEDUC.jpg" />
+    <None Include="Content\Imagens\Novo-Logo- Prodesp.jpg" />
+    <None Include="Content\Imagens\Novo-Logo-SEDUC.jpg" />
+    <None Include="Content\Imagens\Novo-Logo-Prodesp.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -312,6 +315,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -79,5 +79,25 @@ namespace GestaoDemandas.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Novo_Logo_Prodesp {
+            get {
+                object obj = ResourceManager.GetObject("Novo_Logo_Prodesp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Novo_Logo_SEDUC {
+            get {
+                object obj = ResourceManager.GetObject("Novo_Logo_SEDUC", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

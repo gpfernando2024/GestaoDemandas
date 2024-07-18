@@ -13,6 +13,7 @@ namespace GestaoDemandas.Models
         public List<RevisionHistoryItem> RevisionHistory { get; set; }
         public List<EventDeliveryItem> EventsDeliveries { get; set; }
         public List<ProjectItem> OngoingProjects { get; set; }
+        public string Observacao { get; set; }
     }
 
     public class RevisionHistoryItem

@@ -36,14 +36,14 @@
     <table style="width: 100%;">
         <tr>
             <td style="width: 28%; text-align: center; vertical-align: middle;">
-                <img src="@Url.Content("~/Content/Imagens/logo-prodesp.jpg")" alt="Logo Prodesp" width="350">
+                <img src="@Url.Content("~/Content/Imagens/Novo-Logo-Prodesp.jpg")" alt="Logo Prodesp" width="350">
             </td>
             <td style="width: 43%; text-align: center;">
                 <h1>Revisão Diária - @DateTime.Now.ToString("dd/MM/yyyy")</h1>
                 <h3>Projeto SEDUC</h3>
             </td>
             <td style="width: 28%; text-align: center; vertical-align: middle;">
-                <img src="@Url.Content("~/Content/Imagens/logo-seduc.jpg")" alt="Logo SEDUC" width="350">
+                <img src="@Url.Content("~/Content/Imagens/Novo-Logo-SEDUC.jpg")" alt="Logo SEDUC" width="350">
             </td>
         </tr>
     </table>
@@ -79,7 +79,9 @@
             <th>Início</th>
             <th>Status</th>
             <th>Previsão</th>
-            <th>Observação</th>
+            <!--
+                <th>Observação</th>
+            -->
             <th>Conclusão</th>
         </tr>
         @foreach (var item in Model.EventsDeliveries)
@@ -106,7 +108,9 @@
                     </td>
                     <td>@item.Status</td>
                     <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                    <td>@item.Observacao</td>
+                    <!--
+                        <td>@item.Observacao</td>
+                    -->
                     <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                 </tr>
             }
@@ -123,9 +127,12 @@
             <th>Início</th>
             <th>Status</th>
             <th>Previsão</th>
-            <th>Observação</th>
+            <!--
+                <th>Observação</th>
+            -->
             <th>Conclusão</th>
         </tr>
+
         @foreach (var item in Model.OngoingProjects)
         {
             <tr>
@@ -141,7 +148,9 @@
                 </td>
                 <td>@item.Status</td>
                 <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>@item.Observacao</td>
+                <!--
+                    <td>@item.Observacao</td>
+                -->
                 <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
             </tr>
         }

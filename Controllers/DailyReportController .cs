@@ -108,11 +108,27 @@ namespace GestaoDemandas.Controllers
                     // Histórico de Revisão
                     AddRevisionHistory(doc, model.RevisionHistory);
 
+                    // Salto de página
+                    XWPFParagraph pageBreakParagraph = doc.CreateParagraph();
+                    XWPFRun pageBreakRun = pageBreakParagraph.CreateRun();
+                    pageBreakRun.AddBreak(BreakType.PAGE);
+
                     // Eventos / Entregas
                     AddEventsDeliveries(doc, model.EventsDeliveries);
 
                     // Projetos em Andamento
                     AddOngoingProjects(doc, model.OngoingProjects);
+
+                    // Adicionar a observação
+                    if (!string.IsNullOrEmpty(model.Observacao))
+                    {
+                        XWPFParagraph observacaoParagraph = doc.CreateParagraph();
+                        observacaoParagraph.Alignment = ParagraphAlignment.LEFT;
+                        XWPFRun observacaoRun = observacaoParagraph.CreateRun();
+                        observacaoRun.SetText("Observação: " + model.Observacao);
+                        observacaoRun.IsBold = true;
+                        observacaoRun.FontSize = 12;
+                    }
 
                     // Adiciona a seção Custom_Sistema nos Eventos e Entregas
                     //AddCustomSistemaEventDelivery(doc, model.EventsDeliveries);
@@ -290,6 +306,7 @@ namespace GestaoDemandas.Controllers
                 // Verificar se o estado está entre os permitidos
                 if (state == "Desenvolvimento" ||
                     state == "Aberto" ||
+                    state == "Suspenso" ||
                     state == "Suspenso - Temp" ||
                     state == "Suspenso-Temp" ||
                     state == "Análise" ||
@@ -427,8 +444,8 @@ namespace GestaoDemandas.Controllers
             // Adiciona a primeira imagem (usando recursos incorporados)
             using (MemoryStream ms = new MemoryStream())
             {
-                Properties.Resources.Logo_Prodesp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                AddImageToCell(doc, headerRow.GetCell(0), ms.ToArray(), 150, 70);
+                Properties.Resources.Novo_Logo_Prodesp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                AddImageToCell(doc, headerRow.GetCell(0), ms.ToArray(), 150, 50);
             }
 
             // Adiciona o título "Revisão Diária - data atual" centralizado na célula
@@ -442,8 +459,8 @@ namespace GestaoDemandas.Controllers
             // Adiciona a segunda imagem (usando recursos incorporados)
             using (MemoryStream ms = new MemoryStream())
             {
-                Properties.Resources.Logo_SEDUC.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                AddImageToCell(doc, headerRow.GetCell(2), ms.ToArray(), 150, 70);
+                Properties.Resources.Novo_Logo_SEDUC.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                AddImageToCell(doc, headerRow.GetCell(2), ms.ToArray(), 150, 50);
             }
         }
 
@@ -509,6 +526,7 @@ namespace GestaoDemandas.Controllers
             // Linha 2: Eventos em andamento na SEDUC
             XWPFParagraph sectionTitle2 = doc.CreateParagraph();
             sectionTitle2.Alignment = ParagraphAlignment.LEFT;
+            sectionTitle2.SpacingAfter = 0; // Remove o espaçamento após o parágrafo
             XWPFRun sectionTitleRun2 = sectionTitle2.CreateRun();
             sectionTitleRun2.SetText("Eventos em andamento na SEDUC:");
             sectionTitleRun2.IsBold = true;
@@ -523,6 +541,7 @@ namespace GestaoDemandas.Controllers
             // Linha 3: Entregas do dia
             XWPFParagraph sectionTitle3 = doc.CreateParagraph();
             sectionTitle3.Alignment = ParagraphAlignment.LEFT;
+            sectionTitle3.SpacingBefore = 0; // Remove o espaçamento antes do parágrafo
             XWPFRun sectionTitleRun3 = sectionTitle3.CreateRun();
             sectionTitleRun3.SetText("Entregas do dia:");
             sectionTitleRun3.IsBold = true;
@@ -614,7 +633,7 @@ namespace GestaoDemandas.Controllers
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Status", item.Status);
-                    CreateInfoParagraph(doc, "• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Observação", item.Observacao);
 
 
@@ -644,7 +663,7 @@ namespace GestaoDemandas.Controllers
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
-            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao" };
+            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao" };
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();
             sectionTitle.Alignment = ParagraphAlignment.LEFT;
@@ -683,9 +702,6 @@ namespace GestaoDemandas.Controllers
                 foreach (var item in group)
                 {
 
-                    //paragraph = doc.CreateParagraph();
-                    //paragraph.Alignment = ParagraphAlignment.LEFT;
-
                     // Recuo para a direita a partir do campo WorkItemId
 
                     if (item.WorkItemId != default)
@@ -720,7 +736,7 @@ namespace GestaoDemandas.Controllers
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Status", item.Status);
-                    CreateInfoParagraph(doc, "• Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Observação", item.Observacao);
 
 
