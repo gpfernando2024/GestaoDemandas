@@ -14,6 +14,7 @@ namespace GestaoDemandas.Models
         public List<EventDeliveryItem> EventsDeliveries { get; set; }
         public List<ProjectItem> OngoingProjects { get; set; }
         public string Observacao { get; set; }
+        public List<ProjectSuspendItem> projectSuspendItems { get; set; }
     }
 
     public class RevisionHistoryItem
@@ -56,6 +57,28 @@ namespace GestaoDemandas.Models
         public DateTime? DataInicioAtendimento { get; set; }
         public string Status { get; set; }
  
+        public DateTime? DataPrevistaEntrega { get; set; }
+        public string Observacao { get; set; }
+        public DateTime? Conclusao { get; set; }
+        public DateTime? DataFechamento { get; set; }
+        public string DescriçãoProjeto { get; set; }
+        public string GerênciaProdesp { get; set; }
+        public string EntregaEstratégica { get; set; }
+        public string SemanaProdesp { get; set; }
+        public string NomeProjeto { get; set; }
+        public string Finalidade { get; set; }
+        public DateTime? DataRealHomologação { get; set; }
+    }
+
+    public class ProjectSuspendItem
+    {
+        public string Title { get; set; }
+        public int WorkItemId { get; set; }
+        public string Custom_Sistema { get; set; }
+        public DateTime? DataAbertura { get; set; }
+        public DateTime? DataInicioAtendimento { get; set; }
+        public string Status { get; set; }
+
         public DateTime? DataPrevistaEntrega { get; set; }
         public string Observacao { get; set; }
         public DateTime? Conclusao { get; set; }

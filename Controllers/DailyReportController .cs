@@ -130,6 +130,9 @@ namespace GestaoDemandas.Controllers
                         observacaoRun.FontSize = 12;
                     }
 
+                    // Projetos Suspenso e Abortados
+                    AddSuspendProjects(doc, model.projectSuspendItems);
+
                     // Adiciona a seção Custom_Sistema nos Eventos e Entregas
                     //AddCustomSistemaEventDelivery(doc, model.EventsDeliveries);
 
@@ -204,7 +207,8 @@ namespace GestaoDemandas.Controllers
                             }
                         },
                         EventsDeliveries = ParseEventDeliveryItems(workItems),
-                        OngoingProjects = ParseProjectItems(workItems)
+                        OngoingProjects = ParseProjectItems(workItems),
+                        projectSuspendItems = ParseProjectSuspendItems(workItems)
                     };
 
                     return model;
@@ -312,7 +316,8 @@ namespace GestaoDemandas.Controllers
                     state == "Análise" ||
                     state == "Deploy Producao" ||
                     state == "Aguardando Solicitante" &&
-                    (customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
+                    //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
+                    (customSistema == "Transporte Escolar"))
                 {
                     var projectItem = new ProjectItem
                     {
@@ -358,6 +363,69 @@ namespace GestaoDemandas.Controllers
                     items.Add(projectItem);
                 }
             }
+            return items;
+        }
+
+        private List<ProjectSuspendItem> ParseProjectSuspendItems(List<WorkItem> workItems)
+        {
+            var items = new List<ProjectSuspendItem>();
+            foreach (var item in workItems)
+            {
+                string state = item.State;
+                string customSistema = item.Custom_Sistema;
+
+                // Verificar se o estado está entre os permitidos
+                if (state == "Suspenso" ||
+                    state == "Suspenso-Temp" &&
+                    //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
+                    (customSistema == "Indicação Escolas PEI" || customSistema == "PLACON"))
+                {
+                    var projectSuspendItem = new ProjectSuspendItem
+                    {
+                        Custom_Sistema = customSistema,
+                        WorkItemId = item.WorkItemId,
+                        Title = item.Title,
+                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
+                        DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
+                        Status = state,
+                        Observacao = item.Custom_Finalidade,
+                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
+                        DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
+                        GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
+                        EntregaEstratégica = item.Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,
+                        SemanaProdesp = item.Custom_SemanaProdesp,
+                        NomeProjeto = item.Custom_NomeProjeto,
+                        DataRealHomologação = GetNullableDateTime(item, "Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a"), // Data Real da Homologação
+                    };
+
+                    // Convertendo datas com tratamento para evitar exceções
+                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    {
+                        // Data de Abertura
+                        projectSuspendItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                    }
+
+                    if (item.Custom_DataInicioAtendimento != null)
+                    {
+                        projectSuspendItem.DataInicioAtendimento = item.Custom_DataInicioAtendimento;
+                    }
+
+                    if (item.Custom_DataPrevistaDaEntrega != null)
+                    {
+                        projectSuspendItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega;
+                    }
+
+                    if (item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef != null)
+                    {
+                        projectSuspendItem.Conclusao = item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+                    }
+
+                    items.Add(projectSuspendItem);
+                }
+
+            }
+
             return items;
         }
 
@@ -512,6 +580,7 @@ namespace GestaoDemandas.Controllers
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();
             sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            sectionTitle.SpacingAfter = 0; // Remove o espaçamento após o parágrafo
             XWPFRun sectionTitleRun = sectionTitle.CreateRun();
             sectionTitleRun.SetText("Eventos / Entregas");
             sectionTitleRun.IsBold = true;
@@ -536,7 +605,7 @@ namespace GestaoDemandas.Controllers
             CT_PPr pPr2 = sectionTitle2.GetCTP().AddNewPPr();
             CT_Shd shd2 = pPr2.AddNewShd();
             shd2.val = ST_Shd.clear;
-            shd2.fill = "##E7EFF9"; // Cor azul em hexadecimal
+            shd2.fill = "#FFFFFF"; // Cor azul em hexadecimal
 
             // Linha 3: Entregas do dia
             XWPFParagraph sectionTitle3 = doc.CreateParagraph();
@@ -551,7 +620,7 @@ namespace GestaoDemandas.Controllers
             CT_PPr pPr3 = sectionTitle3.GetCTP().AddNewPPr();
             CT_Shd shd3 = pPr3.AddNewShd();
             shd3.val = ST_Shd.clear;
-            shd3.fill = "##E7EFF9"; // Cor azul em hexadecimal
+            shd3.fill = "#FFFFFF"; // Cor azul em hexadecimal
 
             /*
             Eventos em andamento na SEDUC:
@@ -664,6 +733,7 @@ namespace GestaoDemandas.Controllers
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
             string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao" };
+            string[] validSistemas = { "Transporte Escolar" };
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();
             sectionTitle.Alignment = ParagraphAlignment.LEFT;
@@ -679,8 +749,8 @@ namespace GestaoDemandas.Controllers
             shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
 
             var groupedProjects = ongoingProjects
-                .Where(p => validStatuses.Contains(p.Status))
-                .GroupBy(p => p.Custom_Sistema);
+               .Where(p => p.Custom_Sistema == "Transporte Escolar") 
+               .GroupBy(p => p.Custom_Sistema);
 
             int systemCounter = 1;
 
@@ -752,6 +822,96 @@ namespace GestaoDemandas.Controllers
 
         }
 
+        private void AddSuspendProjects(XWPFDocument doc, List<ProjectSuspendItem> projectSuspendItems)
+        {
+            string[] validStatuses = { "Suspenso", "Suspenso-Temp" };
+            string[] validSistemas = { "Indicação Escolas PEI", "PLACON (Plataforma Conviva SP)" };
+
+            XWPFParagraph sectionTitle = doc.CreateParagraph();
+            sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun = sectionTitle.CreateRun();
+            sectionTitleRun.SetText("Projetos Suspenso / Abortado");
+            sectionTitleRun.IsBold = true;
+            sectionTitleRun.FontSize = 14;
+
+            // Crie um estilo para o parágrafo
+            CT_PPr pPr = sectionTitle.GetCTP().AddNewPPr();
+            CT_Shd shd = pPr.AddNewShd();
+            shd.val = ST_Shd.clear;
+            shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
+
+            var groupedProjects = projectSuspendItems
+            .GroupBy(p => p.Custom_Sistema);
+
+            int systemCounter = 1;
+
+            foreach (var group in groupedProjects)
+            {
+                // Sistema
+                XWPFParagraph paragraph = doc.CreateParagraph();
+                paragraph.Alignment = ParagraphAlignment.LEFT;
+                paragraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                paragraph.SpacingAfterLines = 1;
+                XWPFRun run = paragraph.CreateRun();
+                run.SetText($"{systemCounter} - {group.Key}");
+                run.IsBold = true;
+                run.FontSize = 10;
+                systemCounter++;
+
+                char subCounter = 'a';
+
+                foreach (var item in group)
+                {
+
+                    // Recuo para a direita a partir do campo WorkItemId
+
+                    if (item.WorkItemId != default)
+                    {
+                        paragraph.IndentationLeft = 0; // Valor em unidades de 1/20 de ponto, 500 equivale a 5cm
+                    }
+
+                    // Título da atividade
+                    XWPFParagraph activityTitleParagraph = doc.CreateParagraph();
+                    activityTitleParagraph.Alignment = ParagraphAlignment.LEFT;
+                    activityTitleParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    activityTitleParagraph.SpacingAfterLines = 1;
+                    activityTitleParagraph.IndentationLeft = 567; // 5cm in twips (1 cm = 567 twips)
+                    XWPFRun activityTitleRun = activityTitleParagraph.CreateRun();
+                    activityTitleRun.SetText($"{subCounter}) Atividade: {item.Title}");
+                    activityTitleRun.FontSize = 10;
+                    subCounter++;
+
+                    // Demanda
+                    XWPFParagraph demandParagraph = doc.CreateParagraph();
+                    demandParagraph.Alignment = ParagraphAlignment.LEFT;
+                    demandParagraph.SpacingBetween = 1; // Espaçamento simples entre linhas
+                    demandParagraph.SpacingAfterLines = 1;
+                    demandParagraph.IndentationLeft = 1134; // 10cm in twips (2 cm = 1134 twips)
+                    XWPFRun demandRun = demandParagraph.CreateRun();
+                    demandRun.SetText($"• Demanda: {item.WorkItemId}");
+                    demandRun.IsBold = true;
+                    demandRun.FontSize = 10;
+
+                    // Informações adicionais
+                    CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Status", item.Status);
+                    CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
+                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+
+
+                    // Ajuste de espaço entre parágrafos
+                    paragraph.SpacingAfter = 0;
+                    paragraph.SpacingBeforeLines = 0;
+                }
+
+                // Ajuste de espaço entre grupos de parágrafos
+                sectionTitle.SpacingAfter = 0;
+                sectionTitle.SpacingBeforeLines = 0;
+            }
+
+        }
 
         // Método para adicionar a seção Custom_Sistema nos Eventos e Entregas
         private void AddCustomSistemaEventDelivery(XWPFDocument doc, List<EventDeliveryItem> eventsDeliveries)
