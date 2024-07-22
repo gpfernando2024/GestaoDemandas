@@ -13,8 +13,18 @@
         footer {
             text-align: center;
             padding: 20px 0;
-            background-color: #f8f9fa;
+            background-color: #DDA0DD;
             margin-top: 20px;
+        }
+        .centralizado {
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .linha {
+            margin: 0;
+            padding: 0;
         }
 
         /* Estilos adicionais para o corpo da página, se necessário */
@@ -58,8 +68,9 @@
 
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; Todos os Direitos Reservados @DateTime.Now.Year - Gestão de Demandas</p>
+        <footer class="centralizado">
+            <p class="linha">Todos os Direitos Reservados © @DateTime.Now.Year</p>
+            <p class="linha">PRODESP - Companhia Processamento de Dados do Estado de São Paulo - Gestão de Demandas</p>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
