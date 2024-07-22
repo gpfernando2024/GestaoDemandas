@@ -8,6 +8,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 10px; /* Tamanho da fonte */
         }
 
         th, td {
@@ -129,8 +130,8 @@
             <th>Previsão</th>
             <!--
                 <th>Observação</th>
+                <th>Conclusão</th>
             -->
-            <th>Conclusão</th>
         </tr>
 
         @foreach (var item in Model.OngoingProjects)
@@ -150,8 +151,8 @@
                 <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
                 <!--
                     <td>@item.Observacao</td>
+                    <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                 -->
-                <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
             </tr>
         }
     </table>
