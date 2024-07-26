@@ -20,6 +20,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.WebControls;
 using NPOI.SS.Formula.Functions;
 using System.Drawing;
+using GestaoDemandas.Enumeradores;
 
 /*
     Campos DevOps Analytics
@@ -247,7 +248,7 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -328,7 +329,7 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -389,7 +390,7 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -700,10 +701,12 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
 
 
                     // Ajuste de espaço entre parágrafos
@@ -804,10 +807,12 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
 
 
                     // Ajuste de espaço entre parágrafos
@@ -839,6 +844,20 @@ namespace GestaoDemandas.Controllers
             CT_Shd shd = pPr.AddNewShd();
             shd.val = ST_Shd.clear;
             shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
+
+            XWPFParagraph sectionTitle2 = doc.CreateParagraph();
+            sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun2 = sectionTitle2.CreateRun();
+            sectionTitleRun2.SetText("Por decisão do cliente, abortaram qualquer mudança no novo sistema de Indicação de Escola SED, passando a usar o sistema antigo – Indicação de Escolas PEI do PortalNet. Estamos acompanhando o processo.");
+            sectionTitleRun2.IsBold = true;
+            sectionTitleRun2.IsItalic = true;
+            sectionTitleRun2.FontSize = 9;
+
+            // Crie um estilo para o parágrafo
+            CT_PPr pPr2 = sectionTitle2.GetCTP().AddNewPPr();
+            CT_Shd shd2 = pPr2.AddNewShd();
+            shd2.val = ST_Shd.clear;
+            shd2.fill = "#FFFFFF"; // Cor branco
 
             var groupedProjects = projectSuspendItems
             .GroupBy(p => p.Custom_Sistema);
@@ -895,10 +914,12 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
 
 
                     // Ajuste de espaço entre parágrafos
