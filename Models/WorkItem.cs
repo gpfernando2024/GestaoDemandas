@@ -29,6 +29,7 @@ namespace GestaoDemandas.Models
         public string Custom_NomeProjeto { get; set; }
         //Data Real da Homologação
         public DateTime? Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a { get; set; }
+        public string Custom_Atividade { get; set; }
     }
 
 }

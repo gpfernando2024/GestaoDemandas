@@ -20,9 +20,13 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.WebControls;
 using NPOI.SS.Formula.Functions;
 using System.Drawing;
+using GestaoDemandas.Enumeradores;
+using System.Diagnostics;
+using System.Web.Services.Description;
 
 /*
     Campos DevOps Analytics
+
     Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a = Data Real da Homologação
     Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c = GerênciaProdesp
     Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e = DescriçãoProjeto (Descrição do Projeto, relacionada a sessão Gestão Prodesp)
@@ -48,7 +52,11 @@ using System.Drawing;
     Custom_DataInicioPrevisto = DataInicioPrevisto
     Custom_GerenteProjeto = GerenteProjeto
 
-    https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/$metadata#WorkItems(WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_GerenteProjeto,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef
+    URL:https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?
+        $filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'
+        &$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef
+        &$orderby=CreatedDate desc
+
  */
 
 namespace GestaoDemandas.Controllers
@@ -56,10 +64,11 @@ namespace GestaoDemandas.Controllers
       
     public class DailyReportController : Controller
     {
-        private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'&$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&orderby=WorkItemId desc";
+        private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?\r\n        $filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'\r\n        &$select=WorkItemId,Custom_Atividade,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef\r\n&$orderby=CreatedDate desc";
 
         // Token de autorização (substitua com seu token real - Data da Expiração: 31/12/2024)
         private static readonly string AuthToken = "3icjlaewk56pj3v2d6z5ssarsfjwojd2uy54mupc4mavje2ijewq";
+        private SituacaoAtividade Status;
 
         public async Task<ActionResult> StatusReport()
         {
@@ -132,12 +141,6 @@ namespace GestaoDemandas.Controllers
 
                     // Projetos Suspenso e Abortados
                     AddSuspendProjects(doc, model.projectSuspendItems);
-
-                    // Adiciona a seção Custom_Sistema nos Eventos e Entregas
-                    //AddCustomSistemaEventDelivery(doc, model.EventsDeliveries);
-
-                    // Adiciona a seção Custom_Sistema nos Projetos em Andamento
-                    //AddCustomSistemaOngoingProject(doc, model.OngoingProjects);
 
                     // Escreve o documento no stream de memória
                     doc.Write(ms);
@@ -246,8 +249,9 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        Status = item.State,
+                        //Observacao = item.Custom_Finalidade,
+                        //Observacao = ObservacaoHelper.ObterObservacao(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -304,18 +308,18 @@ namespace GestaoDemandas.Controllers
             var items = new List<ProjectItem>();
             foreach (var item in workItems)
             {
-                string state = item.State;
+                string status = item.State;
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado está entre os permitidos
-                if (state == "Desenvolvimento" ||
-                    state == "Aberto" ||
-                    state == "Suspenso" ||
-                    state == "Suspenso - Temp" ||
-                    state == "Suspenso-Temp" ||
-                    state == "Análise" ||
-                    state == "Deploy Producao" ||
-                    state == "Aguardando Solicitante" &&
+                if (status == "Desenvolvimento" ||
+                    status == "Aberto" ||
+                    status == "Suspenso" ||
+                    status == "Suspenso - Temp" ||
+                    status == "Suspenso-Temp" ||
+                    status == "Análise" ||
+                    status == "Deploy Producao" ||
+                    status == "Aguardando Solicitante" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
                 {
@@ -327,8 +331,8 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        Status = status,
+                        //Observacao = ObservacaoHelper.ObterObservacaoAndamento(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -336,6 +340,7 @@ namespace GestaoDemandas.Controllers
                         SemanaProdesp = item.Custom_SemanaProdesp,
                         NomeProjeto = item.Custom_NomeProjeto,
                         DataRealHomologação = GetNullableDateTime(item, "Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a"), // Data Real da Homologação
+                        
                     };
 
                     // Convertendo datas com tratamento para evitar exceções
@@ -363,6 +368,11 @@ namespace GestaoDemandas.Controllers
                     items.Add(projectItem);
                 }
             }
+            // Ordenar os projetos pelo sistema e pela data de abertura
+            var orderedItems = items
+                .OrderBy(p => p.Custom_Sistema) // Ordena pelo sistema (ordem alfabética)
+                .ThenBy(p => p.DataAbertura)   // Em seguida, ordena pela data de abertura
+                .ToList();
             return items;
         }
 
@@ -371,12 +381,12 @@ namespace GestaoDemandas.Controllers
             var items = new List<ProjectSuspendItem>();
             foreach (var item in workItems)
             {
-                string state = item.State;
+                string status = item.State;
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado está entre os permitidos
-                if (state == "Suspenso" ||
-                    state == "Suspenso-Temp" &&
+                if (status == "Suspenso" ||
+                    status == "Suspenso-Temp" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Indicação Escolas PEI" || customSistema == "PLACON"))
                 {
@@ -388,8 +398,8 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
-                        Observacao = item.Custom_Finalidade,
+                        Status = status,
+                        //Observacao = ObservacaoHelper.ObterObservacao(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -422,6 +432,7 @@ namespace GestaoDemandas.Controllers
                     }
 
                     items.Add(projectSuspendItem);
+
                 }
 
             }
@@ -632,11 +643,6 @@ namespace GestaoDemandas.Controllers
                            e.Conclusao.HasValue &&
                            e.Conclusao.Value.Date == today)  // Verifique a data específica de conclusão
                .GroupBy(e => e.Custom_Sistema);
-            /*
-            var groupedEvents = eventsDeliveries
-                .Where(e => e.Status == "Concluído")
-                .GroupBy(p => p.Custom_Sistema);
-            */
 
             // Verificando se há eventos agrupados
             if (groupedEvents.Any())
@@ -700,10 +706,13 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
+
 
 
                     // Ajuste de espaço entre parágrafos
@@ -749,7 +758,7 @@ namespace GestaoDemandas.Controllers
             shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
 
             var groupedProjects = ongoingProjects
-               .Where(p => p.Custom_Sistema == "Transporte Escolar") 
+               .Where(p => p.Custom_Sistema == "Transporte Escolar")
                .GroupBy(p => p.Custom_Sistema);
 
             int systemCounter = 1;
@@ -804,10 +813,13 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
+                    //CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
 
 
                     // Ajuste de espaço entre parágrafos
@@ -839,6 +851,20 @@ namespace GestaoDemandas.Controllers
             CT_Shd shd = pPr.AddNewShd();
             shd.val = ST_Shd.clear;
             shd.fill = "#B8CCE4"; // Cor azul em hexadecimal
+
+            XWPFParagraph sectionTitle2 = doc.CreateParagraph();
+            sectionTitle.Alignment = ParagraphAlignment.LEFT;
+            XWPFRun sectionTitleRun2 = sectionTitle2.CreateRun();
+            sectionTitleRun2.SetText("Por decisão do cliente, abortaram qualquer mudança no novo sistema de Indicação de Escola SED, passando a usar o sistema antigo – Indicação de Escolas PEI do PortalNet. Estamos acompanhando o processo.");
+            sectionTitleRun2.IsBold = true;
+            sectionTitleRun2.IsItalic = true;
+            sectionTitleRun2.FontSize = 9;
+
+            // Crie um estilo para o parágrafo
+            CT_PPr pPr2 = sectionTitle2.GetCTP().AddNewPPr();
+            CT_Shd shd2 = pPr2.AddNewShd();
+            shd2.val = ST_Shd.clear;
+            shd2.fill = "#FFFFFF"; // Cor branco
 
             var groupedProjects = projectSuspendItems
             .GroupBy(p => p.Custom_Sistema);
@@ -895,10 +921,12 @@ namespace GestaoDemandas.Controllers
                     // Informações adicionais
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento?.ToString("dd/MM/yyyy"));
-                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
+                    CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Status", item.Status);
                     CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
-                    CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
+                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
+                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
 
 
                     // Ajuste de espaço entre parágrafos
