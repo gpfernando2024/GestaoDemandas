@@ -234,11 +234,11 @@ namespace GestaoDemandas.Controllers
             var items = new List<EventDeliveryItem>();
             foreach (var item in workItems)
             {
-                string state = item.State;
+                string status = item.State;
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado é diferente de "Concluido"
-                if (state == "Concluido" &&
+                if (status == "Concluido" &&
                     (customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                 {
                     var eventItem = new EventDeliveryItem
@@ -249,7 +249,7 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
+                        Status = status,
                         //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
@@ -307,18 +307,18 @@ namespace GestaoDemandas.Controllers
             var items = new List<ProjectItem>();
             foreach (var item in workItems)
             {
-                string state = item.State;
+                string status = item.State;
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado está entre os permitidos
-                if (state == "Desenvolvimento" ||
-                    state == "Aberto" ||
-                    state == "Suspenso" ||
-                    state == "Suspenso - Temp" ||
-                    state == "Suspenso-Temp" ||
-                    state == "Análise" ||
-                    state == "Deploy Producao" ||
-                    state == "Aguardando Solicitante" &&
+                if (status == "Desenvolvimento" ||
+                    status == "Aberto" ||
+                    status == "Suspenso" ||
+                    status == "Suspenso - Temp" ||
+                    status == "Suspenso-Temp" ||
+                    status == "Análise" ||
+                    status == "Deploy Producao" ||
+                    status == "Aguardando Solicitante" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
                 {
@@ -330,7 +330,7 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
+                        Status = status,
                         //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
@@ -374,12 +374,12 @@ namespace GestaoDemandas.Controllers
             var items = new List<ProjectSuspendItem>();
             foreach (var item in workItems)
             {
-                string state = item.State;
+                string status = item.State;
                 string customSistema = item.Custom_Sistema;
 
                 // Verificar se o estado está entre os permitidos
-                if (state == "Suspenso" ||
-                    state == "Suspenso-Temp" &&
+                if (status == "Suspenso" ||
+                    status == "Suspenso-Temp" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Indicação Escolas PEI" || customSistema == "PLACON"))
                 {
@@ -391,7 +391,7 @@ namespace GestaoDemandas.Controllers
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
-                        Status = state,
+                        Status = status,
                         //Observacao = item.Custom_Finalidade,
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
