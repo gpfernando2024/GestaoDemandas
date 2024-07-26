@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GestaoDemandas.Enumeradores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,21 +19,20 @@ namespace GestaoDemandas.Enumeradores
          Aguardando Solicitante = 8
          */
 
-        Concluido = 1,             
-        Analise = 2,
-        SuspensoTemp = 3,
-        Desenvolvimento = 4,
-        Aberto = 5,
-        Suspenso = 6,
-        DeployProducao = 7,
-        AguardandoSolicitante = 8
+        Aberto,
+        Concluido,
+        SuspensoTemp,
+        Desenvolvimento,
+        AguardandoSolicitante,
+        Suspenso,
+        Análise
     }
 
     public class ObservacaoHelper
     {
-        public static string ObterObservacao(SituacaoAtividade situacao)
+        public static string ObterObservacao(SituacaoAtividade? status)
         {
-            switch (situacao)
+            switch (status)
             {
                 case SituacaoAtividade.Concluido:
                     // Lógica para calcular a data de publicação em produção
@@ -44,7 +44,7 @@ namespace GestaoDemandas.Enumeradores
 
                     return $"Publicado em Produção: {dataPublicacao.ToShortDateString()}";
 
-                case SituacaoAtividade.Analise:
+                case SituacaoAtividade.Análise:
                     return "Em análise";
 
                 case SituacaoAtividade.SuspensoTemp:
@@ -64,6 +64,30 @@ namespace GestaoDemandas.Enumeradores
 
                 default:
                     return "Situação não reconhecida";
+            }
+        }
+    }
+
+    public static class SituacaoAtividadeExtensions
+    {
+        public static SituacaoAtividade? FromString(string status)
+        {
+            switch (status)
+            {
+                case "Aberto":
+                    return SituacaoAtividade.Aberto;
+                case "Suspenso-Temp":
+                    return SituacaoAtividade.SuspensoTemp;
+                case "Desenvolvimento":
+                    return SituacaoAtividade.Desenvolvimento;
+                case "Aguardando Solicitante":
+                    return SituacaoAtividade.AguardandoSolicitante;
+                case "Suspenso":
+                    return SituacaoAtividade.Suspenso;
+                case "Análise":
+                    return SituacaoAtividade.Análise;
+                default:
+                    return null; // ou lance uma exceção
             }
         }
     }
