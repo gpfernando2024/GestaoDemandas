@@ -250,8 +250,6 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = item.State,
-                        //Observacao = item.Custom_Finalidade,
-                        //Observacao = ObservacaoHelper.ObterObservacao(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -332,7 +330,6 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = status,
-                        //Observacao = ObservacaoHelper.ObterObservacaoAndamento(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
@@ -399,7 +396,6 @@ namespace GestaoDemandas.Controllers
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = status,
-                        //Observacao = ObservacaoHelper.ObterObservacao(Status),
                         Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
