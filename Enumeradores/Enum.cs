@@ -74,6 +74,8 @@ namespace GestaoDemandas.Enumeradores
         {
             switch (status)
             {
+                case "Concluido":
+                    return SituacaoAtividade.Concluido;
                 case "Aberto":
                     return SituacaoAtividade.Aberto;
                 case "Suspenso-Temp":
