@@ -55,7 +55,7 @@ namespace GestaoDemandas.Controllers
             };
 
             // Add Personal Access Token (PAT) for authentication
-            var pat = "noroimmyoi74rv7ev6m3yao5an4smxjsxqu6kohrfs7j2esmjxcq"; // Replace with your PAT - Data da Expiração: 31/12/2024
+            var pat = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a"; // Replace with your PAT - Data da Expiração: 31/12/2024
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
@@ -106,7 +106,7 @@ namespace GestaoDemandas.Controllers
             //var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType%20eq%20'User Story'%20and%20 &$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_GerenteProjeto,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e, CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$orderby=CreatedDate%20desc";
 
             // Set Personal Access Token (PAT) for authentication
-            var pat = "noroimmyoi74rv7ev6m3yao5an4smxjsxqu6kohrfs7j2esmjxcq"; // Replace with your PAT
+            var pat = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a"; // Replace with your PAT
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
 
