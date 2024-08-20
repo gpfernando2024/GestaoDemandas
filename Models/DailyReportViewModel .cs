@@ -30,6 +30,7 @@ namespace GestaoDemandas.Models
         public string Title { get; set; }
         public int WorkItemId { get; set; }
         public string Custom_Sistema { get; set; }
+        public string TagNames { get; set; }
         public DateTime? DataAbertura { get; set; }
 
         public DateTime? DataInicioAtendimento { get; set; }
@@ -53,6 +54,7 @@ namespace GestaoDemandas.Models
         public string Title { get; set; }
         public int WorkItemId { get; set; }
         public string Custom_Sistema { get; set; }
+        public string TagNames { get; set; }
         public DateTime? DataAbertura { get; set; }
         public DateTime? DataInicioAtendimento { get; set; }
         public string Status { get; set; }
@@ -75,6 +77,7 @@ namespace GestaoDemandas.Models
         public string Title { get; set; }
         public int WorkItemId { get; set; }
         public string Custom_Sistema { get; set; }
+        public string TagNames { get; set; }
         public DateTime? DataAbertura { get; set; }
         public DateTime? DataInicioAtendimento { get; set; }
         public string Status { get; set; }

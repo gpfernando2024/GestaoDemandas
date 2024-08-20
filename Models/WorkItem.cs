@@ -10,6 +10,7 @@ namespace GestaoDemandas.Models
         public int WorkItemId { get; set; }
         public string Title { get; set; }
         public string Custom_Sistema { get; set; }
+        public string TagNames { get; set; }
         public string State { get; set; }
         public string Custom_Prioridade_Epic { get; set; }
         public string Custom_Finalidade { get; set; }
