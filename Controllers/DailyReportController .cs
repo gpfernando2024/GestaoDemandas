@@ -68,6 +68,7 @@ namespace GestaoDemandas.Controllers
 
         // Token de autorização (substitua com seu token real - Data da Expiração: 31/12/2024)
         private static readonly string AuthToken = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a";
+
         private SituacaoAtividade Status;
 
         public async Task<ActionResult> StatusReport()
