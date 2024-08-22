@@ -114,10 +114,10 @@
                 <td>@item.State</td>
                 <td>@item.Custom_Prioridade_Epic</td>
                 <td>@item.Custom_Finalidade</td>
-                <td>@(item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != default(DateTime) ? item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
+                <td>@(item.Custom_DataAbertura != default(DateTime) ? item.Custom_DataAbertura.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
                 <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>@(item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue ? item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_DataFechamento.HasValue ? item.Custom_DataFechamento.Value.ToString("dd/MM/yyyy") : "")</td>
             </tr>
         }
     </tbody>

@@ -247,11 +247,11 @@ namespace GestaoDemandas.Controllers
                         Custom_Sistema = customSistema,
                         WorkItemId = item.WorkItemId,
                         Title = item.Title,
-                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataAbertura = GetNullableDateTime(item, "Custom_DataAbertura"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = item.State,
-                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
+                        Conclusao = GetNullableDateTime(item, "Custom_DataFechamento"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
                         EntregaEstratégica = item.Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,
@@ -261,9 +261,9 @@ namespace GestaoDemandas.Controllers
                     };
 
                     // Convertendo datas com tratamento para evitar exceções
-                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    if (item.Custom_DataAbertura != null)
                     {
-                        eventItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                        eventItem.DataAbertura = item.Custom_DataAbertura;
                     }
 
                     if (item.Custom_DataInicioAtendimento != null)
@@ -318,6 +318,7 @@ namespace GestaoDemandas.Controllers
                     status == "Suspenso-Temp" ||
                     status == "Análise" ||
                     status == "Deploy Producao" ||
+                    status == "Homologacao" ||
                     status == "Aguardando Solicitante" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
@@ -327,11 +328,11 @@ namespace GestaoDemandas.Controllers
                         Custom_Sistema = customSistema,
                         WorkItemId = item.WorkItemId,
                         Title = item.Title,
-                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataAbertura = GetNullableDateTime(item, "Custom_DataAbertura"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = status,
-                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
+                        Conclusao = GetNullableDateTime(item, "Custom_DataFechamento"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
                         EntregaEstratégica = item.Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,
@@ -342,10 +343,10 @@ namespace GestaoDemandas.Controllers
                     };
 
                     // Convertendo datas com tratamento para evitar exceções
-                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    if (item.Custom_DataAbertura != null)
                     {
                         // Data de Abertura
-                        projectItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                        projectItem.DataAbertura = item.Custom_DataAbertura;
                     }
 
                     if (item.Custom_DataInicioAtendimento != null)
@@ -358,9 +359,9 @@ namespace GestaoDemandas.Controllers
                         projectItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega;
                     }
 
-                    if (item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef != null)
+                    if (item.Custom_DataFechamento != null)
                     {
-                        projectItem.Conclusao = item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+                        projectItem.Conclusao = item.Custom_DataFechamento;
                     }
 
                     items.Add(projectItem);
@@ -393,11 +394,11 @@ namespace GestaoDemandas.Controllers
                         Custom_Sistema = customSistema,
                         WorkItemId = item.WorkItemId,
                         Title = item.Title,
-                        DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
+                        DataAbertura = GetNullableDateTime(item, "Custom_DataAbertura"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
                         Status = status,
-                        Conclusao = GetNullableDateTime(item, "Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef"), // Data Fechamento
+                        Conclusao = GetNullableDateTime(item, "Custom_DataFechamento"), // Data Fechamento
                         DescriçãoProjeto = item.Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,
                         GerênciaProdesp = item.Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c,
                         EntregaEstratégica = item.Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,
@@ -407,10 +408,10 @@ namespace GestaoDemandas.Controllers
                     };
 
                     // Convertendo datas com tratamento para evitar exceções
-                    if (item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d != null)
+                    if (item.Custom_DataAbertura != null)
                     {
                         // Data de Abertura
-                        projectSuspendItem.DataAbertura = item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+                        projectSuspendItem.DataAbertura = item.Custom_DataAbertura;
                     }
 
                     if (item.Custom_DataInicioAtendimento != null)
@@ -423,9 +424,9 @@ namespace GestaoDemandas.Controllers
                         projectSuspendItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega;
                     }
 
-                    if (item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef != null)
+                    if (item.Custom_DataFechamento != null)
                     {
-                        projectSuspendItem.Conclusao = item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+                        projectSuspendItem.Conclusao = item.Custom_DataFechamento;
                     }
 
                     items.Add(projectSuspendItem);
