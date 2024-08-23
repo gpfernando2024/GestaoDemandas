@@ -60,6 +60,18 @@
                 </select>
             </td>
             <td>
+                <label for="searchUserName">Responsável</label>
+                <select id="searchUserName" name="searchUserName" class="form-control">
+                    <option value="">Selecione a Responsável</option>
+                    <option value="ffribeiro">Fernando Flavio</option>
+                    <option value="Alexandre Pozzi">Alexandre Pozzi</option>
+                    <option value="Matheus Pinheiro">Matheus Pinheiro</option>
+                    <option value="rhantonio">Raphael</option>
+                    <option value="gmoura">Guilherme Moura</option>
+                    <option value="Elisson Vale">Elisson Vale</option>
+                </select>
+            </td>
+            <td>
                 <label for="searchDataInicio">Início Atendimento</label>
                 <input type="date" id="searchDataInicio" name="searchDataInicio" class="form-control" value="@ViewBag.SearchDataInicio" placeholder="__/__/____" />
             </td>
@@ -83,6 +95,7 @@
         <tr>
             <th>ID</th>
             <th>Atividade</th>
+            <th>Responsável</th>
             <th>Status</th>
             <th>Prioridade</th>
             <th>Finalidade</th>
@@ -111,6 +124,7 @@
             <tr class="@entregaClass">
                 <td>@item.WorkItemId</td>
                 <td>@item.Title</td>
+                <td>@(item.AssignedTo != null ? item.AssignedTo.UserName : "")</td> <!-- Exibir o valor de UserName -->
                 <td>@item.State</td>
                 <td>@item.Custom_Prioridade_Epic</td>
                 <td>@item.Custom_Finalidade</td>

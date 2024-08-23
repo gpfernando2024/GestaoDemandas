@@ -60,7 +60,7 @@ namespace GestaoDemandas.Controllers
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
 
-        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, bool clear = false, int page = 1, int pageSize = 25)
+        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, string searchUserName, bool clear = false, int page = 1, int pageSize = 25)
         {
             if (clear)
             {
@@ -73,6 +73,7 @@ namespace GestaoDemandas.Controllers
                 searchDataAbertura = null;
                 searchDataFechamento = null;
                 searchSistema = null;
+                searchUserName = null;
                 ViewBag.SearchId = null;
                 ViewBag.SearchDataInicio = null;
                 ViewBag.SearchDataConclusao = null;
@@ -81,6 +82,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.searchDataAbertura = null;
                 ViewBag.searchDataFechamento = null;
                 ViewBag.searchSistema = null;
+                ViewBag._searchUsuario = null;
             }
             /*
                WorkItemId,
@@ -100,7 +102,7 @@ namespace GestaoDemandas.Controllers
                Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e
 
              */
-            var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?\r\n        $filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'\r\n        &$select=WorkItemId,Title,Custom_Atividade,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef\r\n&$orderby=CreatedDate desc";
+            var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'&$select=WorkItemId,Title,Custom_Atividade,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef,AssignedToUserSK,AssignedTo&$expand=AssignedTo($select=UserName),Teams($select=TeamName)&$orderby=CreatedDate desc";
             
             //var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType%20eq%20'User Story'%20and%20Custom_Sistema%20eq%20'Transporte%20Escolar'%20and%20Custom_Sistema%20eq%20'Indicação%20Escolas%20PEI'&$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_GerenteProjeto,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e, CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$orderby=CreatedDate%20desc";
             //var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType%20eq%20'User Story'%20and%20 &$select=WorkItemId,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_GerenteProjeto,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e, CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$orderby=CreatedDate%20desc";
@@ -123,7 +125,7 @@ namespace GestaoDemandas.Controllers
                 // Criar um objeto anônimo para desserialização
                 var responseObj = new { value = new List<WorkItem>() };
                 responseObj = JsonConvert.DeserializeAnonymousType(responseData, responseObj);
-
+                
                 // Desserializar o JSON para uma lista de objetos WorkItem
                 var workItems = responseObj.value;
 
@@ -158,6 +160,11 @@ namespace GestaoDemandas.Controllers
                     workItems = workItems.Where(w => w.Custom_Sistema.Equals(searchSistema, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
+                if (!string.IsNullOrEmpty(searchUserName))
+                {
+                    workItems = workItems.Where(w => w.AssignedTo?.UserName?.Equals(searchUserName, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+                }
+
                 ViewBag.SearchId = searchId;
                 ViewBag.SearchDataInicio = searchDataInicio;
                 ViewBag.SearchDataConclusao = searchDataConclusao;
@@ -166,6 +173,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.SearcgDataAbertura = searchDataAbertura;
                 ViewBag.SearchDataFechamento = searchDataFechamento;
                 ViewBag.SeachSistema = searchStatus;
+                ViewBag.SeachUserName = searchUserName;
 
                 var totalItems = workItems.Count;
                 var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
