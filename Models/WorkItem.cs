@@ -14,11 +14,16 @@ namespace GestaoDemandas.Models
         public string Custom_Prioridade_Epic { get; set; }
         public string Custom_Finalidade { get; set; }
         /*Custom_DataAbertura*/
-        public DateTime Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d { get; set; }
+        //public DateTime Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d { get; set; }
+        public WorkItem(DateTime? custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef)
+        {
+            Custom_DataAbertura = (DateTime)custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
+            Custom_DataFechamento = Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+        }
         public DateTime? Custom_DataInicioAtendimento { get; set; }
         public DateTime? Custom_DataPrevistaDaEntrega { get; set; }
         /*Custom_DataFechamento*/
-        public DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef { get; set; }
+        //public DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef { get; set; }
         //DescriçãoProjeto (Descrição do Projeto, relacionada a sessão Gestão Prodesp)
         public string Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e { get; set; }
         //GerênciaProdesp
