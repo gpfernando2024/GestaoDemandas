@@ -40,8 +40,9 @@ namespace GestaoDemandas.Models
         public DateTime? Custom_DataFechamento { get; private set; }
         public AssignedTo AssignedTo { get; set; }
         public List<Team> Teams { get; set; } // Adicione esta propriedade
+        public List<BoardLocations> BoardLocations { get; set; }
     }
-}
+
     public class AssignedTo
     {
         public string UserName { get; set; }
@@ -50,5 +51,12 @@ namespace GestaoDemandas.Models
     public class Team
     {
         public string TeamName { get; set; }
+    }
+    public class BoardLocations 
+    { 
+        public string ColumnName { get; set; }
+        public string IsDone { get; set; }
+        public string BoardName  { get; set; }
+
     }
 }
