@@ -54,12 +54,5 @@ namespace GestaoDemandas.Models
     {
         public string TeamName { get; set; }
     }
-    public class BoardLocations
-    {
-        public string ColumnName { get; set; }
-        public string IsDone { get; set; }
-        public string BoardName { get; set; }
-        public string Done { get; set; }
-    }
 
 }
