@@ -38,6 +38,17 @@ namespace GestaoDemandas.Models
         public string Custom_Atividade { get; set; }
         public DateTime Custom_DataAbertura { get; private set; }
         public DateTime? Custom_DataFechamento { get; private set; }
+        public AssignedTo AssignedTo { get; set; }
+        public List<Team> Teams { get; set; } // Adicione esta propriedade
+    }
+}
+    public class AssignedTo
+    {
+        public string UserName { get; set; }
     }
 
+    public class Team
+    {
+        public string TeamName { get; set; }
+    }
 }
