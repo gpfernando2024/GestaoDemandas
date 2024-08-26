@@ -25,7 +25,9 @@ namespace GestaoDemandas.Enumeradores
         Desenvolvimento,
         AguardandoSolicitante,
         Suspenso,
-        Análise
+        Análise,
+        Homologacao,
+        DeployProducao
     }
 
     public class ObservacaoHelper
@@ -61,7 +63,10 @@ namespace GestaoDemandas.Enumeradores
 
                 case SituacaoAtividade.Aberto:
                     return "Atividade pendente de início";
-
+                case SituacaoAtividade.Homologacao:
+                    return "Atividade pendente de homologação pelo cliente";
+                case SituacaoAtividade.DeployProducao:
+                    return "Atividade pendente de publicação em Produção";
                 default:
                     return "Situação não reconhecida";
             }
@@ -88,6 +93,10 @@ namespace GestaoDemandas.Enumeradores
                     return SituacaoAtividade.Suspenso;
                 case "Análise":
                     return SituacaoAtividade.Análise;
+                case "Homologacao":
+                    return SituacaoAtividade.Homologacao;
+                case "Deploy Producao":
+                    return SituacaoAtividade.DeployProducao;
                 default:
                     return null; // ou lance uma exceção
             }

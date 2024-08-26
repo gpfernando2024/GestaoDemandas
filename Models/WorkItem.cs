@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static NPOI.HSSF.Util.HSSFColor;
 
 namespace GestaoDemandas.Models
 {
@@ -35,31 +36,6 @@ namespace GestaoDemandas.Models
         //Data Real da Homologação
         public DateTime? Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a { get; set; }
         public string Custom_Atividade { get; set; }
-        public DateTime Custom_DataAbertura { get; }
-        public string UserName { get; set; }
-        public DateTime? Custom_DataFechamento { get; set; }
-        public string DescriçãoProjeto { get; set; }
-        public string GerênciaProdesp { get; set; }
-        public string EntregaEstratégica { get; set; }
-        public DateTime? DataRealHomologação { get; set; }
-        public AssignedTo AssignedTo { get; set; }
-        public List<Team> Teams { get; set; } // Adicione esta propriedade
-        public List<BoardLocations> BoardLocations { get; set; }
-    }
-    public class AssignedTo
-    {
-        public string UserName { get; set; }
-    }
-    public class Team
-    {
-        public string TeamName { get; set; }
-    }
-    public class BoardLocations
-    {
-        public string ColumnName { get; set; }
-        public string IsDone { get; set; }
-        public string BoardName { get; set; }
-        public string Done { get; set; }
     }
 
 }
