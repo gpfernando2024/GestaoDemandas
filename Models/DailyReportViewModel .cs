@@ -47,6 +47,9 @@ namespace GestaoDemandas.Models
         public string NomeProjeto { get; set; }
         public string Finalidade { get; set; }
         public DateTime? DataRealHomologação { get; set; }
+        public AssignedTo AssignedTo { get; set; }
+        public List<Team> Team { get; set; }
+        public List<BoardLocations> BoardLocations { get; set; }
     }
     public class ProjectItem
     {
@@ -56,7 +59,7 @@ namespace GestaoDemandas.Models
         public DateTime? DataAbertura { get; set; }
         public DateTime? DataInicioAtendimento { get; set; }
         public string Status { get; set; }
- 
+
         public DateTime? DataPrevistaEntrega { get; set; }
         public string Observacao { get; set; }
         public DateTime? Conclusao { get; set; }
@@ -68,6 +71,9 @@ namespace GestaoDemandas.Models
         public string NomeProjeto { get; set; }
         public string Finalidade { get; set; }
         public DateTime? DataRealHomologação { get; set; }
+        public AssignedTo AssignedTo { get; set; }
+        public List<Team> Team { get; set; }
+        public List<BoardLocations> BoardLocations { get; set; }
     }
 
     public class ProjectSuspendItem
@@ -90,5 +96,9 @@ namespace GestaoDemandas.Models
         public string NomeProjeto { get; set; }
         public string Finalidade { get; set; }
         public DateTime? DataRealHomologação { get; set; }
+        public AssignedTo AssignedTo { get; set; }
+        public List<Team> Team { get; set; }
+        public List<BoardLocations> BoardLocations { get; set; }
+
     }
 }
