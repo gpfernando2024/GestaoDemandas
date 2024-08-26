@@ -36,6 +36,8 @@ namespace GestaoDemandas.Models
         //Data Real da Homologação
         public DateTime? Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a { get; set; }
         public string Custom_Atividade { get; set; }
+        public DateTime Custom_DataAbertura { get; private set; }
+        public DateTime? Custom_DataFechamento { get; private set; }
     }
 
 }
