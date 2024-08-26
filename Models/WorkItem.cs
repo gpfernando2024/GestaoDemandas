@@ -43,6 +43,24 @@ namespace GestaoDemandas.Models
         public string GerênciaProdesp { get; set; }
         public string EntregaEstratégica { get; set; }
         public DateTime? DataRealHomologação { get; set; }
+        public AssignedTo AssignedTo { get; set; }
+        public List<Team> Teams { get; set; } // Adicione esta propriedade
+        public List<BoardLocations> BoardLocations { get; set; }
+    }
+    public class AssignedTo
+    {
+        public string UserName { get; set; }
+    }
+    public class Team
+    {
+        public string TeamName { get; set; }
     }
 
+    public class BoardLocations
+    {
+        public string ColumnName { get; set; }
+        public string  IsDone { get; set; }
+        public string BoardName { get; set; }
+        public string Done {  get; set; }
+    }
 }
