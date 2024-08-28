@@ -18,8 +18,23 @@ namespace GestaoDemandas.Models
         //public DateTime Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d { get; set; }
         public WorkItem(DateTime? custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef)
         {
-            Custom_DataAbertura = (DateTime)custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d;
-            Custom_DataFechamento = Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef;
+            if (custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue)
+            {
+                Custom_DataAbertura = custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.Value;
+            }
+            else
+            {
+                Custom_DataAbertura = null; // ou DateTime.MinValue, se preferir
+            }
+
+            if (Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue)
+            {
+                Custom_DataFechamento = Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value;
+            }
+            else
+            {
+                Custom_DataFechamento = null; // ou DateTime.MinValue, se preferir
+            }
         }
         public DateTime? Custom_DataInicioAtendimento { get; set; }
         public DateTime? Custom_DataPrevistaDaEntrega { get; set; }
@@ -36,8 +51,8 @@ namespace GestaoDemandas.Models
         //Data Real da Homologação
         public DateTime? Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a { get; set; }
         public string Custom_Atividade { get; set; }
-        public DateTime Custom_DataAbertura { get; private set; }
-        public DateTime? Custom_DataFechamento { get; private set; }
+        public DateTime? Custom_DataAbertura { get; set; }
+        public DateTime? Custom_DataFechamento { get; set; }
         public AssignedTo AssignedTo { get; set; }
         public List<Team> Teams { get; set; } // Adicione esta propriedade
         public List<BoardLocations> BoardLocations { get; set; }

@@ -7,10 +7,25 @@
     // Verifica se um sistema específico foi selecionado no filtro
     string sistemaSelecionado = Request.QueryString["searchSistema"];
 
-    // Se um sistema específico foi selecionado, atualiza o título da página
-    if (!string.IsNullOrEmpty(sistemaSelecionado))
+    // Verifica se uma equipe específico foi selecionado no filtro
+    string teamSelecionado = Request.QueryString["searchTeam"];
+
+    // Atualiza o título da página com o sistema e a equipe selecionados, se disponíveis
+    if (!string.IsNullOrEmpty(sistemaSelecionado) && !string.IsNullOrEmpty(teamSelecionado))
     {
-        ViewBag.Title = $"Lista de Atividades - {sistemaSelecionado}";
+        ViewBag.Title = $"Lista de Atividades - Equipe: {teamSelecionado} - Sistema: {sistemaSelecionado}";
+    }
+    else if (!string.IsNullOrEmpty(sistemaSelecionado))
+    {
+        ViewBag.Title = $"Lista de Atividades - Sistema: {sistemaSelecionado}";
+    }
+    else if (!string.IsNullOrEmpty(teamSelecionado))
+    {
+        ViewBag.Title = $"Lista de Atividades - Equipe: {teamSelecionado}";
+    }
+    else
+    {
+        ViewBag.Title = "Lista de Atividades";
     }
 
     var currentDate = DateTime.Now;
@@ -26,6 +41,23 @@
 <form method="get" action="@Url.Action("Index")" class="font-size-12">
     <table class="table table-bordered">
         <tr>
+            <td>
+                <label for="searchTeam">Equipe</label>
+                <select id="searchTeam" name="searchTeam" class="form-control">
+                    <option value="">Select Team</option>
+                    @if (ViewBag.Teams != null)
+                    {
+                        var teams = ViewBag.Teams as List<string>;
+                        if (teams != null)
+                        {
+                            foreach (var team in teams)
+                            {
+                                <option value="@team" @(Request.QueryString["searchTeam"] == team ? "selected" : "")>@team</option>
+                            }
+                        }
+                    }
+                </select>
+            </td>
             <td>
                 <label for="searchId">ID</label>
                 <input type="text" id="searchId" name="searchId" class="form-control" value="@ViewBag.SearchId" placeholder="" />
@@ -47,12 +79,29 @@
             <td>
                 <label for="searchSistema">Sistema</label>
                 <select id="searchSistema" name="searchSistema" class="form-control">
-                    <option value="">Selecione o Sistema</option>
-                    <option value="Transporte Escolar">Transporte Escolar</option>
-                    <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
-                    <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
-                    <!-- Adicione mais sistemas conforme necessário -->
+                    <option value="">Select Sistema</option>
+                    @if (ViewBag.Sistemas != null)
+                    {
+                        var sistemas = ViewBag.Sistemas as List<string>;
+                        if (sistemas != null)
+                        {
+                            foreach (var sistema in sistemas)
+                            {
+                                <option value="@sistema" @(Request.QueryString["searchSistema"] == sistema ? "selected" : "")>@sistema</option>
+                            }
+                        }
+                    }
                 </select>
+                <!--
+    <label for="searchSistema">Sistema</label>
+    <select id="searchSistema" name="searchSistema" class="form-control">
+        <option value="">Selecione o Sistema</option>
+        <option value="Transporte Escolar">Transporte Escolar</option>
+        <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
+        <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
+                <!-- Adicione mais sistemas conforme necessário
+    </select>
+    -->
             </td>
             <td>
                 <label for="searchPrioridade">Prioridade</label>
@@ -119,7 +168,7 @@
                 <td>@item.State</td>
                 <td>@item.Custom_Prioridade_Epic</td>
                 <td>@item.Custom_Finalidade</td>
-                <td>@(item.Custom_DataAbertura != default(DateTime) ? item.Custom_DataAbertura.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
+                <td>@(item.Custom_DataAbertura.HasValue ? item.Custom_DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
                 <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_DataFechamento.HasValue ? item.Custom_DataFechamento.Value.ToString("dd/MM/yyyy") : "")</td>

@@ -60,7 +60,7 @@ namespace GestaoDemandas.Controllers
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
 
-        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, bool clear = false, int page = 1, int pageSize = 25)
+        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, string searchTeam, string team, bool clear = false, int page = 1, int pageSize = 160)
         {
             if (clear)
             {
@@ -73,6 +73,7 @@ namespace GestaoDemandas.Controllers
                 searchDataAbertura = null;
                 searchDataFechamento = null;
                 searchSistema = null;
+                searchTeam = null;
                 ViewBag.SearchId = null;
                 ViewBag.SearchDataInicio = null;
                 ViewBag.SearchDataConclusao = null;
@@ -81,6 +82,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.searchDataAbertura = null;
                 ViewBag.searchDataFechamento = null;
                 ViewBag.searchSistema = null;
+                ViewBag.SearchTeam = null;
             }
             /*
                WorkItemId,
@@ -100,11 +102,9 @@ namespace GestaoDemandas.Controllers
                Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e
 
              */
-            /*
-            devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType eq 'User Story' &$select=WorkItemId,Custom_Sistema,Title,WorkItemType,State,Priority,Severity,TagNames,AreaSK,Risk,TagNames, Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef, Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a, Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c, Custom_AreaAbertura,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_Cliente,Custom_ClienteProdesp,Custom_DataInicioAtendimento, Custom_DataInicioPrevisto,Custom_DataPrevistaDaEntrega,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef,Custom_Finalidade,Custom_NomeProjeto,Custom_Prioridade_Epic, &$expand=AssignedTo($select=UserName),Iteration($select=IterationPath),Area($select=AreaPath),Teams($select=TeamName),Project($select=ProjectName),                Links(                    $filter=TargetWorkItem/WorkItemType eq 'User Story';                    $select=LinkTypeName;                    $expand=TargetWorkItem($select=WorkItemType,WorkItemId,Title,State)) */
-            //var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finanças%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?        $filter=WorkItemType eq 'User Story'        &$select=WorkItemId,Custom_Sistema,Title,WorkItemType,State,Priority,Severity,TagNames,AreaSK,Risk,TagNames,        Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef, Custom_22fc3f0b__002D6c54__002D4770__002Dacb3__002D8d7b813ae13a, Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c, Custom_AreaAbertura,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_Cliente,Custom_ClienteProdesp,Custom_DataInicioAtendimento, Custom_DataInicioPrevisto,Custom_DataPrevistaDaEntrega,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef,Custom_Finalidade,Custom_NomeProjeto,Custom_Prioridade_Epic,        &$expand=AssignedTo($select=UserName),Iteration($select=IterationPath),Area($select=AreaPath),Teams($select=TeamName),Project($select=ProjectName),                Links(                    $filter=TargetWorkItem/WorkItemType eq 'User Story';                    $select=LinkTypeName;                    $expand=TargetWorkItem($select=WorkItemType,WorkItemId,Title,State))";
-            var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'       &$select=WorkItemId,Title,Custom_Atividade,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef &$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
-            
+            //var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'       &$select=WorkItemId,Title,Custom_Atividade,State,TagNames,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef &$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
+            var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType eq 'User Story'       &$select=WorkItemId,Title,Custom_Atividade,State,TagNames,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef &$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
+
             // Set Personal Access Token (PAT) for authentication
             var pat = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a"; // Replace with your PAT
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
@@ -155,7 +155,15 @@ namespace GestaoDemandas.Controllers
 
                 if (!string.IsNullOrEmpty(searchSistema))
                 {
-                    workItems = workItems.Where(w => w.Custom_Sistema.Equals(searchSistema, StringComparison.OrdinalIgnoreCase)).ToList();
+                    workItems = workItems
+                        .Where(w => !string.IsNullOrEmpty(w.Custom_Sistema) && w.Custom_Sistema.Equals(searchSistema, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                // Novo filtro por Team
+                if (!string.IsNullOrEmpty(searchTeam))
+                {
+                    workItems = workItems.Where(w => w.Teams != null && w.Teams.Any(t => t.TeamName.Equals(searchTeam, StringComparison.OrdinalIgnoreCase))).ToList();
                 }
 
                 ViewBag.SearchId = searchId;
@@ -165,7 +173,39 @@ namespace GestaoDemandas.Controllers
                 ViewBag.SearchPrioridade = searchPrioridade;
                 ViewBag.SearcgDataAbertura = searchDataAbertura;
                 ViewBag.SearchDataFechamento = searchDataFechamento;
-                ViewBag.SeachSistema = searchStatus;
+                ViewBag.SeachSistema = searchSistema;
+                ViewBag.SearchTeam = searchTeam;
+
+                // Inicializa a lista de equipes
+                var teams = workItems
+                    .SelectMany(w => w.Teams)
+                    .Where(t => !string.IsNullOrEmpty(t.TeamName))
+                    .Select(t => t.TeamName)
+                    .Distinct()
+                    .ToList();
+
+                ViewBag.Teams = teams ?? new List<string>(); // Garantir que ViewBag.Teams nunca seja nulo
+
+                //var teams = workItems.SelectMany(w => w.Teams).Where(t => t.TeamName != null).Select(t => t.TeamName).Distinct().ToList();
+                //ViewBag.Teams = new SelectList(teams);
+
+                var sistemas = workItems
+                    .Where(w => w.Custom_Sistema != null) // Filtra itens onde Custom_Sistema não é nulo
+                    .Select(w => w.Custom_Sistema)
+                    .Distinct()
+                    .ToList();
+
+                // Adiciona uma opção padrão se nenhum sistema foi encontrado
+                if (!sistemas.Any())
+                {
+                    sistemas.Add("Nenhum sistema disponível");
+                }
+
+                ViewBag.Sistemas = sistemas ?? new List<string>();
+                //ViewBag.Sistemas = new SelectList(sistemas);
+
+                //var sistemas = workItems.Select(w => w.Custom_Sistema ?? "Não Especificado").Distinct().ToList();
+                //ViewBag.Sistemas = new SelectList(sistemas);
 
                 var totalItems = workItems.Count;
                 var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
