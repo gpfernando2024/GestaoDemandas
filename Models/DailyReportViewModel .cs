@@ -36,7 +36,7 @@ namespace GestaoDemandas.Models
 
         public string Status { get; set; }
         public DateTime? DataPrevistaEntrega { get; set; }
-
+        public string TagNames { get; set; }
         public string Custom_Finalidade { get; set; }
         public DateTime? Conclusao { get; set; }
         public string Observacao { get; set; }
@@ -59,6 +59,7 @@ namespace GestaoDemandas.Models
         public DateTime? DataAbertura { get; set; }
         public DateTime? DataInicioAtendimento { get; set; }
         public string Status { get; set; }
+        public string TagNames { get; set; }
 
         public DateTime? DataPrevistaEntrega { get; set; }
         public string Observacao { get; set; }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace GestaoDemandas.Models
         public string State { get; set; }
         public string Custom_Prioridade_Epic { get; set; }
         public string Custom_Finalidade { get; set; }
+        public DateTime? Custom_DataAbertura { get; set; }
+        public DateTime? Custom_DataFechamento { get; set; }
+        public DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef {  get; set; } // Data Fechamento
+        public DateTime? Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d { get; set; } // Data abertura
+
         public WorkItem(DateTime? custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef)
         {
             if (custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue)
@@ -26,17 +32,17 @@ namespace GestaoDemandas.Models
             {
                 Custom_DataAbertura = null; // ou DateTime.MinValue, se preferir
             }
-
+            
             if (Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue)
-            {
-                /*Custom_DataFechamento*/
-                Custom_DataFechamento = Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value;
-            }
+                {
+                    /*Custom_DataFechamento*/
+                    Custom_DataFechamento = Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value;
+                }
             else
-            {
-                Custom_DataFechamento = null; // ou DateTime.MinValue, se preferir
+                {
+                    Custom_DataFechamento = null; // ou DateTime.MinValue, se preferir
+                }
             }
-        }
         public DateTime? Custom_DataInicioAtendimento { get; set; }
         public DateTime? Custom_DataPrevistaDaEntrega { get; set; }
         public string DescricaoProjeto {  get; set; }
@@ -65,10 +71,8 @@ namespace GestaoDemandas.Models
             EntregaEstrategica = Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9;//Entrega Estratégica
             GerenciaProdesp = Custom_768b8fc1__002D37ad__002D4ebb__002Da7e1__002Df8f7bc8e2c1c;   //GerênciaProdesp
         }
-
+        public string TagNames { get; set; }
         public string Custom_Atividade { get; set; }
-        public DateTime? Custom_DataAbertura { get; set; }
-        public DateTime? Custom_DataFechamento { get; set; }
         public AssignedTo AssignedTo { get; set; }
         public List<Team> Teams { get; set; } // Adicione esta propriedade
         public List<BoardLocations> BoardLocations { get; set; }

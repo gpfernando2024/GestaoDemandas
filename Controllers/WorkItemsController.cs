@@ -81,6 +81,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.SearchPrioridade = null;
                 ViewBag.searchDataAbertura = null;
                 ViewBag.searchDataFechamento = null;
+                ViewBag.searchConclusao = null;
                 ViewBag.searchSistema = null;
                 ViewBag.SearchTeam = null;
             }
@@ -138,9 +139,9 @@ namespace GestaoDemandas.Controllers
                     workItems = workItems.Where(w => w.Custom_DataInicioAtendimento.HasValue && w.Custom_DataInicioAtendimento.Value.Date == parsedDataInicio.Date).ToList();
                 }
 
-                if (!string.IsNullOrEmpty(searchDataFechamento) && DateTime.TryParseExact(searchDataFechamento, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataFechamento))
+                if (!string.IsNullOrEmpty(searchDataConclusao) && DateTime.TryParseExact(searchDataConclusao, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataConclusao))
                 {
-                    workItems = workItems.Where(w => w.Custom_DataFechamento.HasValue && w.Custom_DataFechamento.Value.Date == parsedDataFechamento.Date).ToList();
+                    workItems = workItems.Where(w => w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue && w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.Date == parsedDataConclusao.Date).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(searchStatus))

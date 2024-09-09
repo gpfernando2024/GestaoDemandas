@@ -30,6 +30,16 @@ namespace GestaoDemandas.Enumeradores
         DeployProducao
     }
 
+    public enum Complemento
+    {
+        Aguardando,
+        EmTeste,
+        DocumentacaoTecnica,
+        categorizacao,
+        impedido
+    }
+        
+
     public class ObservacaoHelper
     {
         public static string ObterObservacao(SituacaoAtividade? status)
@@ -99,6 +109,23 @@ namespace GestaoDemandas.Enumeradores
                     return SituacaoAtividade.DeployProducao;
                 default:
                     return null; // ou lance uma exceção
+            }
+        }
+    }
+
+    public static class ComplementoObservacao 
+    {
+        public static Complemento? FromString(string complemento)
+        {
+            switch (complemento)
+            {
+                case "Impedido":
+                    return Complemento.impedido;
+                case "Documentacao Técnica":
+                    return Complemento.DocumentacaoTecnica;
+                default:
+                    return null;
+
             }
         }
     }

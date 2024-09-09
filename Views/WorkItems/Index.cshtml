@@ -93,15 +93,15 @@
                     }
                 </select>
                 <!--
-    <label for="searchSistema">Sistema</label>
-    <select id="searchSistema" name="searchSistema" class="form-control">
-        <option value="">Selecione o Sistema</option>
-        <option value="Transporte Escolar">Transporte Escolar</option>
-        <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
-        <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
+                <label for="searchSistema">Sistema</label>
+                <select id="searchSistema" name="searchSistema" class="form-control">
+                    <option value="">Selecione o Sistema</option>
+                    <option value="Transporte Escolar">Transporte Escolar</option>
+                    <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
+                    <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
                 <!-- Adicione mais sistemas conforme necessário
-    </select>
-    -->
+                </select>
+                -->
             </td>
             <td>
                 <label for="searchPrioridade">Prioridade</label>
@@ -168,10 +168,10 @@
                 <td>@item.State</td>
                 <td>@item.Custom_Prioridade_Epic</td>
                 <td>@item.Custom_Finalidade</td>
-                <td>@(item.Custom_DataAbertura.HasValue ? item.Custom_DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
+                <td>@(item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue ? item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.Value.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
                 <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>@(item.Custom_DataFechamento.HasValue ? item.Custom_DataFechamento.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue ? item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.ToString("dd/MM/yyyy") : "")</td>
             </tr>
         }
     </tbody>
@@ -180,7 +180,18 @@
 <nav aria-label="Page navigation">
     <ul class="pagination">
         <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, searchSistema = sistemaSelecionado })" aria-label="Previous">
+            <a class="page-link" href="@Url.Action("Index", new {
+                page = ViewBag.CurrentPage - 1,
+                searchId = ViewBag.SearchId,
+                searchDataAbertura = ViewBag.SearchDataAbertura,
+                searchDataFechamento = ViewBag.SearchDataFechamento,
+                searchDataInicio = ViewBag.SearchDataInicio,
+                searchDataConclusao = ViewBag.SearchDataConclusao,
+                searchStatus = ViewBag.SearchStatus,
+                searchPrioridade = ViewBag.SearchPrioridade,
+                searchSistema = ViewBag.SearchSistema,
+                searchTeam = ViewBag.SearchTeam
+            })" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
             </a>
@@ -188,17 +199,40 @@
         @for (int i = 1; i <= ViewBag.TotalPages; i++)
         {
             <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { page = i, searchSistema = sistemaSelecionado })">@i</a>
+                <a class="page-link" href="@Url.Action("Index", new {
+                    page = i,
+                    searchId = ViewBag.SearchId,
+                    searchDataAbertura = ViewBag.SearchDataAbertura,
+                    searchDataFechamento = ViewBag.SearchDataFechamento,
+                    searchDataInicio = ViewBag.SearchDataInicio,
+                    searchDataConclusao = ViewBag.SearchDataConclusao,
+                    searchStatus = ViewBag.SearchStatus,
+                    searchPrioridade = ViewBag.SearchPrioridade,
+                    searchSistema = ViewBag.SearchSistema,
+                    searchTeam = ViewBag.SearchTeam
+                })">@i</a>
             </li>
         }
         <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, searchSistema = sistemaSelecionado })" aria-label="Next">
+            <a class="page-link" href="@Url.Action("Index", new {
+                page = ViewBag.CurrentPage + 1,
+                searchId = ViewBag.SearchId,
+                searchDataAbertura = ViewBag.SearchDataAbertura,
+                searchDataFechamento = ViewBag.SearchDataFechamento,
+                searchDataInicio = ViewBag.SearchDataInicio,
+                searchDataConclusao = ViewBag.SearchDataConclusao,
+                searchStatus = ViewBag.SearchStatus,
+                searchPrioridade = ViewBag.SearchPrioridade,
+                searchSistema = ViewBag.SearchSistema,
+                searchTeam = ViewBag.SearchTeam
+            })" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
             </a>
         </li>
     </ul>
 </nav>
+
 
 <script>
     $(function () {
