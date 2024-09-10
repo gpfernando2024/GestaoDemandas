@@ -319,7 +319,8 @@ namespace GestaoDemandas.Controllers
                     status == "Análise" ||
                     status == "Deploy Producao" ||
                     status == "Homologacao" ||
-                    status == "Aguardando Solicitante" &&
+                    status == "Aguardando Solicitante" ||
+                    status == "Revisão Técnica" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
                 {
@@ -740,7 +741,7 @@ namespace GestaoDemandas.Controllers
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
-            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao" };
+            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao", "Revisão Técnica" };
             string[] validSistemas = { "Transporte Escolar" };
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();
