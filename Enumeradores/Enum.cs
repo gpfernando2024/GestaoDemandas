@@ -32,11 +32,12 @@ namespace GestaoDemandas.Enumeradores
 
     public enum Complemento
     {
-        Aguardando,
         EmTeste,
         DocumentacaoTecnica,
         categorizacao,
-        impedido
+        impedido,
+        Baldeacao,
+        ScriptSQL
     }
         
 
@@ -113,19 +114,49 @@ namespace GestaoDemandas.Enumeradores
         }
     }
 
-    public static class ComplementoObservacao 
+    public static class ComplementoObservacao
     {
-        public static Complemento? FromString(string complemento)
+        public static string ObterComplemento(Complemento? complemento)  
         {
             switch (complemento)
             {
-                case "Impedido":
-                    return Complemento.impedido;
-                case "Documentacao Técnica":
-                    return Complemento.DocumentacaoTecnica;
+                case Complemento.DocumentacaoTecnica:
+                    return ".Elaboração da Documentação Técnica.";
+                case Complemento.impedido:
+                    return ".Atividade com algum impedimento de concluir a atividade.";
+                case Complemento.categorizacao:
+                    return " - Projeto Estratégico.";
+                case Complemento.EmTeste:
+                    return ".Atividade Em Teste.";
+                case Complemento.Baldeacao:
+                    return " - Projeto Estratégico.";
+                case Complemento.ScriptSQL:
+                    return ". Execução de script de ajuste de alguma correção.";
                 default:
                     return null;
+            }
+        }
+    }
 
+    public static class ComplementoExtensions 
+    {
+        public static Complemento? FromString(string complemento) 
+        {
+            switch (complemento)
+            {
+                case "Documentação Técnica":
+                    return Complemento.DocumentacaoTecnica;
+                case "Impedido":
+                    return Complemento.impedido;
+                case "Categorizacao":
+                    return Complemento.categorizacao;
+                case "Em Teste":
+                    return Complemento.EmTeste;
+                case "Baldeação":
+                    return Complemento.Baldeacao;
+                case "Script SQL":
+                    return Complemento.ScriptSQL;
+                default: return null;   
             }
         }
     }

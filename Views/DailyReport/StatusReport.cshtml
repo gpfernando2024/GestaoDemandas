@@ -150,7 +150,7 @@
                 <td>@item.Status</td>
                 <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
                 <!--
-                    <td>@item.Observacao</td>
+                    <td>@item.Observacao + " " + @item.Complemento</td>
                     <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                 -->
             </tr>
