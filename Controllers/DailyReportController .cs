@@ -64,7 +64,7 @@ namespace GestaoDemandas.Controllers
       
     public class DailyReportController : Controller
     {
-        private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'        &$select=WorkItemId,TagNames, Custom_Atividade,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto, Custom_SemanaProdesp,Custom_EntregaValor,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
+        private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v4.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'        &$select=WorkItemId,TagNames, Custom_Atividade,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto, Custom_SemanaProdesp,Custom_EntregaValor,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
 
         // Token de autorização (substitua com seu token real - Data da Expiração: 31/12/2024)
         private static readonly string AuthToken = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a";
@@ -320,7 +320,8 @@ namespace GestaoDemandas.Controllers
                     status == "Deploy Producao" ||
                     status == "Homologacao" ||
                     status == "Aguardando Solicitante" ||
-                    status == "Revisão Técnica" &&
+                    status == "Revisão Técnica" ||
+                    status == "Aguardando Desenvolvimento" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
                 {
@@ -743,7 +744,7 @@ namespace GestaoDemandas.Controllers
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
-            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao", "Revisão Técnica" };
+            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao", "Revisão Técnica", "Aguardando Desenvolvimento" };
             string[] validSistemas = { "Transporte Escolar" };
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();

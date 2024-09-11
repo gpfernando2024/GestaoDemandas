@@ -27,17 +27,20 @@ namespace GestaoDemandas.Enumeradores
         Suspenso,
         Análise,
         Homologacao,
-        DeployProducao
+        DeployProducao,
+        AguardandoDesenvolvimento
     }
 
     public enum Complemento
     {
         EmTeste,
-        DocumentacaoTecnica,
-        categorizacao,
-        impedido,
-        Baldeacao,
-        ScriptSQL
+        ElaboracaoDocumentacaoTecnica,
+        Impedido,
+        ExecuçãoScript,
+        Aguardando,
+        SuspensoTemporariamente,
+        AguardandoDeploy,
+        AguardandoCliente
     }
         
 
@@ -78,6 +81,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade pendente de homologação pelo cliente";
                 case SituacaoAtividade.DeployProducao:
                     return "Atividade pendente de publicação em Produção";
+                case SituacaoAtividade.AguardandoDesenvolvimento:
+                    return "Atividade pendente de ação de desenvolvimento";
                 default:
                     return "Situação não reconhecida";
             }
@@ -108,6 +113,8 @@ namespace GestaoDemandas.Enumeradores
                     return SituacaoAtividade.Homologacao;
                 case "Deploy Producao":
                     return SituacaoAtividade.DeployProducao;
+                case "Aguardando Desenvolvimento":
+                    return SituacaoAtividade.AguardandoDesenvolvimento;
                 default:
                     return null; // ou lance uma exceção
             }
@@ -120,18 +127,22 @@ namespace GestaoDemandas.Enumeradores
         {
             switch (complemento)
             {
-                case Complemento.DocumentacaoTecnica:
+                case Complemento.ElaboracaoDocumentacaoTecnica:
                     return ".Elaboração da Documentação Técnica.";
-                case Complemento.impedido:
+                case Complemento.Impedido:
                     return ".Atividade com algum impedimento de concluir a atividade.";
-                case Complemento.categorizacao:
-                    return " - Projeto Estratégico.";
+                case Complemento.AguardandoCliente:
+                    return ".Atividade com pendência de ação do cliente ou homologação da funcionalidade";
                 case Complemento.EmTeste:
                     return ".Atividade Em Teste.";
-                case Complemento.Baldeacao:
-                    return " - Projeto Estratégico.";
-                case Complemento.ScriptSQL:
+                case Complemento.SuspensoTemporariamente:
+                    return ". Atividade supenso temporariamente pelo cliente para atendimento de outra(s) demandas";
+                case Complemento.ExecuçãoScript:
                     return ". Execução de script de ajuste de alguma correção.";
+                case Complemento.Aguardando:
+                    return ". Também depende de uma ação de outra(s) equipe(s) para o desenvolvimento necessário.";
+                case Complemento.AguardandoDeploy:
+                    return ". Atividade na esteira de publicação em produção.";
                 default:
                     return null;
             }
@@ -144,18 +155,18 @@ namespace GestaoDemandas.Enumeradores
         {
             switch (complemento)
             {
-                case "Documentação Técnica":
-                    return Complemento.DocumentacaoTecnica;
+                case "Elaboração Documentação Técnica":
+                    return Complemento.ElaboracaoDocumentacaoTecnica;
                 case "Impedido":
-                    return Complemento.impedido;
-                case "Categorizacao":
-                    return Complemento.categorizacao;
-                case "Em Teste":
-                    return Complemento.EmTeste;
-                case "Baldeação":
-                    return Complemento.Baldeacao;
-                case "Script SQL":
-                    return Complemento.ScriptSQL;
+                    return Complemento.Impedido;
+                case "Aguardando":
+                    return Complemento.Aguardando;
+                case "Aguardando Deploy":
+                    return Complemento.AguardandoDeploy;
+                case "Aguardando Cliente":
+                    return Complemento.AguardandoCliente;
+                case "Execução Script":
+                    return Complemento.ExecuçãoScript;
                 default: return null;   
             }
         }
