@@ -38,6 +38,7 @@ namespace GestaoDemandas.Enumeradores
         Impedido,
         ExecuçãoScript,
         Aguardando,
+        Pendente_COFI,
         SuspensoTemporariamente,
         AguardandoDeploy,
         AguardandoCliente
@@ -140,6 +141,8 @@ namespace GestaoDemandas.Enumeradores
                 case Complemento.ExecuçãoScript:
                     return ". Execução de script de ajuste de alguma correção.";
                 case Complemento.Aguardando:
+                    return ". Também depende de uma ação do cliente de homologação.";
+                case Complemento.Pendente_COFI:
                     return ". Também depende de uma ação de outra(s) equipe(s) para o desenvolvimento necessário.";
                 case Complemento.AguardandoDeploy:
                     return ". Atividade na esteira de publicação em produção.";
@@ -167,6 +170,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.AguardandoCliente;
                 case "Execução Script":
                     return Complemento.ExecuçãoScript;
+                case "Pendente COFI":
+                    return Complemento.Pendente_COFI;
                 default: return null;   
             }
         }

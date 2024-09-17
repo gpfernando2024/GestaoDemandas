@@ -247,6 +247,7 @@ namespace GestaoDemandas.Controllers
                         Custom_Sistema = customSistema,
                         WorkItemId = item.WorkItemId,
                         Title = item.Title,
+                        TagNames = item.TagNames,
                         DataAbertura = GetNullableDateTime(item, "Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d"),
                         DataInicioAtendimento = GetNullableDateTime(item, "Custom_DataInicioAtendimento"),
                         DataPrevistaEntrega = GetNullableDateTime(item, "Custom_DataPrevistaDaEntrega"),
