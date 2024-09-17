@@ -41,7 +41,8 @@ namespace GestaoDemandas.Enumeradores
         Pendente_COFI,
         SuspensoTemporariamente,
         AguardandoDeploy,
-        AguardandoCliente
+        AguardandoCliente,
+        TesteFinalizado
     }
         
 
@@ -146,6 +147,8 @@ namespace GestaoDemandas.Enumeradores
                     return ". Também depende de uma ação de outra(s) equipe(s) para o desenvolvimento necessário.";
                 case Complemento.AguardandoDeploy:
                     return ". Atividade na esteira de publicação em produção.";
+                case Complemento.TesteFinalizado:
+                    return ". Teste da funcionalidade concluída conforme solicitado.";
                 default:
                     return null;
             }
@@ -172,6 +175,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.ExecuçãoScript;
                 case "Pendente COFI":
                     return Complemento.Pendente_COFI;
+                case "Teste Finalizado":
+                    return Complemento.TesteFinalizado;
                 default: return null;   
             }
         }
