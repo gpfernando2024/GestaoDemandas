@@ -140,7 +140,7 @@ namespace GestaoDemandas.Enumeradores
                 case Complemento.SuspensoTemporariamente:
                     return ". Atividade supenso temporariamente pelo cliente para atendimento de outra(s) demandas";
                 case Complemento.ExecuçãoScript:
-                    return ". Execução de script de ajuste de alguma correção.";
+                    return ". Cração de script de ajuste de alguma correção.";
                 case Complemento.Aguardando:
                     return ". Também depende de uma ação do cliente de homologação.";
                 case Complemento.Pendente_COFI:
