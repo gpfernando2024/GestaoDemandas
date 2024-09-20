@@ -1,4 +1,5 @@
 ﻿using GestaoDemandas.Enumeradores;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,8 @@ namespace GestaoDemandas.Enumeradores
         SuspensoTemporariamente,
         AguardandoDeploy,
         AguardandoCliente,
-        TesteFinalizado
+        TesteFinalizado,
+        EmailCliente
     }
         
 
@@ -149,6 +151,8 @@ namespace GestaoDemandas.Enumeradores
                     return ". Atividade na esteira de publicação em produção.";
                 case Complemento.TesteFinalizado:
                     return ". Teste da funcionalidade concluída conforme solicitado.";
+                case Complemento.EmailCliente:
+                    return ". Enviado e-mail ao cliente. No aguardo do feedback.";
                 default:
                     return null;
             }
@@ -177,6 +181,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.Pendente_COFI;
                 case "Teste Finalizado":
                     return Complemento.TesteFinalizado;
+                case "Enviado E-mail Cliente":
+                    return Complemento.EmailCliente;
                 default: return null;   
             }
         }
