@@ -29,7 +29,8 @@ namespace GestaoDemandas.Enumeradores
         Análise,
         Homologacao,
         DeployProducao,
-        AguardandoDesenvolvimento
+        AguardandoDesenvolvimento,
+        RevisãoTecnica
     }
 
     public enum Complemento
@@ -57,7 +58,7 @@ namespace GestaoDemandas.Enumeradores
                 case SituacaoAtividade.Concluido:
                     // Lógica para calcular a data de publicação em produção
                     DateTime dataPublicacao = DateTime.Now.AddDays(-1);
-                    if (dataPublicacao.DayOfWeek == DayOfWeek.Saturday)
+                    if (dataPublicacao.DayOfWeek == DayOfWeek.Saturday) 
                         dataPublicacao = dataPublicacao.AddDays(-2);
                     else if (dataPublicacao.DayOfWeek == DayOfWeek.Sunday)
                         dataPublicacao = dataPublicacao.AddDays(-3);
@@ -87,6 +88,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade pendente de publicação em Produção";
                 case SituacaoAtividade.AguardandoDesenvolvimento:
                     return "Atividade pendente de ação de desenvolvimento";
+                case SituacaoAtividade.RevisãoTecnica:
+                    return "Atividade em análise técnica.";
                 default:
                     return "Situação não reconhecida";
             }
@@ -119,6 +122,8 @@ namespace GestaoDemandas.Enumeradores
                     return SituacaoAtividade.DeployProducao;
                 case "Aguardando Desenvolvimento":
                     return SituacaoAtividade.AguardandoDesenvolvimento;
+                case "Revisão Técnica":
+                    return SituacaoAtividade.RevisãoTecnica;
                 default:
                     return null; // ou lance uma exceção
             }
