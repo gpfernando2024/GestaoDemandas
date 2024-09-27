@@ -188,6 +188,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.TesteFinalizado;
                 case "Enviado E-mail Cliente":
                     return Complemento.EmailCliente;
+                case "Em Teste":
+                    return Complemento.EmTeste; 
                 default: return null;   
             }
         }
