@@ -85,7 +85,7 @@ namespace GestaoDemandas.Enumeradores
                 case SituacaoAtividade.Homologacao:
                     return "Atividade pendente de homologação pelo cliente";
                 case SituacaoAtividade.DeployProducao:
-                    return "Atividade pendente de publicação em Produção";
+                    return "Atividade pendente de publicação em Produção (aplicação) ou execução de script de correção na tabela.";
                 case SituacaoAtividade.AguardandoDesenvolvimento:
                     return "Atividade pendente de ação de desenvolvimento";
                 case SituacaoAtividade.RevisãoTecnica:
@@ -147,7 +147,7 @@ namespace GestaoDemandas.Enumeradores
                 case Complemento.SuspensoTemporariamente:
                     return ". Atividade supenso temporariamente pelo cliente para atendimento de outra(s) demandas";
                 case Complemento.ExecuçãoScript:
-                    return ". Cração de script de ajuste de alguma correção.";
+                    return ". Criação de script de ajuste de alguma correção em Tabelas.";
                 case Complemento.Aguardando:
                     return ". Também depende de uma ação do cliente de homologação.";
                 case Complemento.Pendente_COFI:
