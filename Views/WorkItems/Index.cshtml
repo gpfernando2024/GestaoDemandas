@@ -93,15 +93,15 @@
                     }
                 </select>
                 <!--
-                <label for="searchSistema">Sistema</label>
-                <select id="searchSistema" name="searchSistema" class="form-control">
-                    <option value="">Selecione o Sistema</option>
-                    <option value="Transporte Escolar">Transporte Escolar</option>
-                    <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
-                    <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
+        <label for="searchSistema">Sistema</label>
+        <select id="searchSistema" name="searchSistema" class="form-control">
+            <option value="">Selecione o Sistema</option>
+            <option value="Transporte Escolar">Transporte Escolar</option>
+            <option value="Indicação Escolas PEI">Indicação Escolas PEI</option>
+            <option value="PLACON (Plataforma Conviva SP)">PLACON (Plataforma Conviva SP)</option> <!-- Adicionei o sistema PLACON aqui -->
                 <!-- Adicione mais sistemas conforme necessário
-                </select>
-                -->
+        </select>
+        -->
             </td>
             <td>
                 <label for="searchPrioridade">Prioridade</label>
@@ -116,6 +116,10 @@
             <td>
                 <label for="searchDataInicio">Início Atendimento</label>
                 <input type="date" id="searchDataInicio" name="searchDataInicio" class="form-control" value="@ViewBag.SearchDataInicio" placeholder="__/__/____" />
+            </td>
+            <td>
+                <label for="searchDataPrevisaoEntrega">Data Prevista Entrega</label>
+                <input type="date" id="searchDataPrevisaoEntrega" name="searchDataPrevisaoEntrega" class="form-control" value="@ViewBag.searchDataPrevisaoEntrega" placeholder="__/__/____" />
             </td>
         </tr>
         <tr>

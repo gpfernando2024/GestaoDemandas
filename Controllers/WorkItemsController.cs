@@ -60,7 +60,7 @@ namespace GestaoDemandas.Controllers
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
 
-        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, string searchTeam, string team, bool clear = false, int page = 1, int pageSize = 160)
+        public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataPrevisaoEntrega,  string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchStatus, string searchPrioridade, string searchSistema, string searchTeam, string team, bool clear = false, int page = 1, int pageSize = 160)
         {
             if (clear)
             {
@@ -74,6 +74,7 @@ namespace GestaoDemandas.Controllers
                 searchDataFechamento = null;
                 searchSistema = null;
                 searchTeam = null;
+                searchDataPrevisaoEntrega = null;
                 ViewBag.SearchId = null;
                 ViewBag.SearchDataInicio = null;
                 ViewBag.SearchDataConclusao = null;
@@ -84,6 +85,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.searchConclusao = null;
                 ViewBag.searchSistema = null;
                 ViewBag.SearchTeam = null;
+                ViewBag.SearchDataPrevisaoEntrega = null;
             }
             /*
                WorkItemId,
@@ -139,6 +141,11 @@ namespace GestaoDemandas.Controllers
                     workItems = workItems.Where(w => w.Custom_DataInicioAtendimento.HasValue && w.Custom_DataInicioAtendimento.Value.Date == parsedDataInicio.Date).ToList();
                 }
 
+                if (!string.IsNullOrEmpty(searchDataPrevisaoEntrega) && DateTime.TryParseExact(searchDataPrevisaoEntrega, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseDataPrevisaoEntrega))
+                {
+                    workItems = workItems.Where(w => w.Custom_DataPrevistaDaEntrega.HasValue && w.Custom_DataPrevistaDaEntrega.Value.Date == parseDataPrevisaoEntrega.Date).ToList();
+                }
+
                 if (!string.IsNullOrEmpty(searchDataConclusao) && DateTime.TryParseExact(searchDataConclusao, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDataConclusao))
                 {
                     workItems = workItems.Where(w => w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue && w.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.Date == parsedDataConclusao.Date).ToList();
@@ -176,6 +183,7 @@ namespace GestaoDemandas.Controllers
                 ViewBag.SearchDataFechamento = searchDataFechamento;
                 ViewBag.SeachSistema = searchSistema;
                 ViewBag.SearchTeam = searchTeam;
+                ViewBag.SearchDataPrevisaoEntrega = searchDataPrevisaoEntrega;
 
                 // Inicializa a lista de equipes
                 var teams = workItems
