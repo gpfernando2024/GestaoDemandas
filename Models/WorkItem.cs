@@ -18,10 +18,12 @@ namespace GestaoDemandas.Models
         public string Custom_Finalidade { get; set; }
         public DateTime? Custom_DataAbertura { get; set; }
         public DateTime? Custom_DataFechamento { get; set; }
+        public DateTime? Custom_DataRealEntrega { get; set; }
         public DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef {  get; set; } // Data Fechamento
         public DateTime? Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d { get; set; } // Data abertura
+        public DateTime? Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc {  get; set; } // Data Real Entrega
 
-        public WorkItem(DateTime? custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef)
+        public WorkItem(DateTime? custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d, DateTime? Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef, DateTime? Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc)
         {
             if (custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue)
             {
@@ -42,7 +44,16 @@ namespace GestaoDemandas.Models
                 {
                     Custom_DataFechamento = null; // ou DateTime.MinValue, se preferir
                 }
+            if (Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc.HasValue)
+            {
+                /*Custom_DataFechamento*/
+                Custom_DataRealEntrega = Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc.Value;
             }
+            else
+            {
+                Custom_DataRealEntrega = null; // ou DateTime.MinValue, se preferir
+            }
+        }
         public DateTime? Custom_DataInicioAtendimento { get; set; }
         public DateTime? Custom_DataPrevistaDaEntrega { get; set; }
         public string DescricaoProjeto {  get; set; }

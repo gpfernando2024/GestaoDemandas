@@ -121,6 +121,10 @@
                 <label for="searchDataPrevisaoEntrega">Data Prevista Entrega</label>
                 <input type="date" id="searchDataPrevisaoEntrega" name="searchDataPrevisaoEntrega" class="form-control" value="@ViewBag.searchDataPrevisaoEntrega" placeholder="__/__/____" />
             </td>
+            <td>
+                <label for="searchDataRealEntrega">Data Real Entrega</label>
+                <input type="date" id="searchDataRealEntrega" name="searchDataRealEntrega" class="form-control" value="@ViewBag.searchDataRealEntrega" placeholder="__/__/____" />
+            </td>
         </tr>
         <tr>
             <td>
@@ -147,6 +151,7 @@
             <th>Abertura</th> <!-- Nova coluna para Data Abertura -->
             <th>Início</th>
             <th>Previsão Entrega</th>
+            <th>Data Real Entrega</th>
             <th>Fechamento</th>
         </tr>
     </thead>
@@ -175,6 +180,7 @@
                 <td>@(item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.HasValue ? item.Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d.Value.ToString("dd/MM/yyyy") : "")</td> <!-- Exibir Data Abertura -->
                 <td>@(item.Custom_DataInicioAtendimento.HasValue ? item.Custom_DataInicioAtendimento.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_DataPrevistaDaEntrega.HasValue ? item.Custom_DataPrevistaDaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                <td>@(item.Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc.HasValue ? item.Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc.Value.ToString("dd/MM/yyyy") : "")</td>
                 <td>@(item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.HasValue ? item.Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef.Value.ToString("dd/MM/yyyy") : "")</td>
             </tr>
         }

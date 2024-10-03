@@ -81,42 +81,46 @@
             <th>Status</th>
             <th>Previsão</th>
             <!--
-                <th>Observação</th>
-            -->
+            <th>Observação</th>
+        -->
             <th>Conclusão</th>
         </tr>
         @foreach (var item in Model.EventsDeliveries)
         {
-            if (item.Conclusao.HasValue &&
-           DateTime.TryParseExact(item.Conclusao.Value.ToString("dd/MM/yyyy"),
-                                  "dd/MM/yyyy",
-                                  System.Globalization.CultureInfo.InvariantCulture,
-                                  System.Globalization.DateTimeStyles.None,
-                                  out DateTime conclusaoData) &&
-           conclusaoData.Date == DateTime.Today)
+            if (item.DataRealEntrega.HasValue &&
+                DateTime.TryParseExact(item.DataRealEntrega.Value.ToString("dd/MM/yyyy"),
+                                       "dd/MM/yyyy",
+                                       System.Globalization.CultureInfo.InvariantCulture,
+                                       System.Globalization.DateTimeStyles.None,
+                                       out DateTime conclusaoData))
             {
+                // Subtrair um dia da data de entrega real
+                conclusaoData = conclusaoData.AddDays(1);
 
-                <tr>
-                    <td>@item.Custom_Sistema</td>
-                    <td>@item.WorkItemId</td>
-                    <td>@item.Title</td>
-                    <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
-                    <td>
-                        @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
-                        {
-                            @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy");
-                        }
-                    </td>
-                    <td>@item.Status</td>
-                    <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
-                    <!--
+                if (conclusaoData.Date == DateTime.Today)
+                {
+                    <tr>
+                        <td>@item.Custom_Sistema</td>
+                        <td>@item.WorkItemId</td>
+                        <td>@item.Title</td>
+                        <td>@(item.DataAbertura != null ? item.DataAbertura.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>
+                            @if (item.DataInicioAtendimento != null && item.DataInicioAtendimento != DateTime.MinValue)
+                            {
+                                @item.DataInicioAtendimento.Value.ToString("dd/MM/yyyy")
+                            }
+                        </td>
+                        <td>@item.Status</td>
+                        <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <!--
                         <td>@item.Observacao</td>
                     -->
-                    <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
-                </tr>
+                        <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
+                    </tr>
+                }
             }
         }
-        </table>
+    </table>
 
     <h2>Principais Projetos em Andamento</h2>
     <table>
