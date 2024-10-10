@@ -837,7 +837,14 @@ namespace GestaoDemandas.Controllers
                         }
                     }
                     Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus);
-                    CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
+                    if (primeiroStatus == "Atividade Cancelada")
+                        {
+                        CreateInfoParagraph(doc, "Observação", $"{ComplementoObservacao.ObterComplemento(complemento)}");
+                    }
+                    else 
+                    {
+                        CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
+                    }
                     //CreateInfoParagraph(doc, "Observação", ObservacaoHelper.ObterObservacao(situacao));
                     //CreateInfoParagraph(doc, "Complemento", ComplementoObservacao.ObterComplemento(complemento));
                     //CreateInfoParagraph(doc, "• Observação", item.Observacao);
