@@ -45,7 +45,8 @@ namespace GestaoDemandas.Enumeradores
         AguardandoDeploy,
         AguardandoCliente,
         TesteFinalizado,
-        EmailCliente
+        EmailCliente,
+        AtividadeCancelado
     }
         
 
@@ -158,6 +159,8 @@ namespace GestaoDemandas.Enumeradores
                     return ". Teste da funcionalidade concluída conforme solicitado.";
                 case Complemento.EmailCliente:
                     return ". Enviado e-mail ao cliente. No aguardo do feedback.";
+                case Complemento.AtividadeCancelado:
+                    return ". Atividade cancelado por não haver necessidade.";
                 default:
                     return null;
             }
@@ -189,7 +192,9 @@ namespace GestaoDemandas.Enumeradores
                 case "Enviado E-mail Cliente":
                     return Complemento.EmailCliente;
                 case "Em Teste":
-                    return Complemento.EmTeste; 
+                    return Complemento.EmTeste;
+                case "Atividade Cancelado":
+                    return Complemento.AtividadeCancelado;
                 default: return null;   
             }
         }
