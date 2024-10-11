@@ -46,7 +46,8 @@ namespace GestaoDemandas.Enumeradores
         AguardandoCliente,
         TesteFinalizado,
         EmailCliente,
-        AtividadeCancelado
+        AtividadeCancelado,
+        ManualUsuario
     }
         
 
@@ -70,29 +71,29 @@ namespace GestaoDemandas.Enumeradores
                     return "Em análise";
 
                 case SituacaoAtividade.SuspensoTemp:
-                    return "Atividade suspensa temporariamente para atendimento de outras demandas urgentes ou projeto/atividade suspenso por decisão do cliente";
+                    return "Atividade suspensa temporariamente para atendimento de outras demandas urgentes ou projeto/atividade suspenso por decisão do cliente.";
 
                 case SituacaoAtividade.Desenvolvimento:
-                    return "Atividade em desenvolvimento";
+                    return "Atividade em desenvolvimento.";
 
                 case SituacaoAtividade.Suspenso:
-                    return "Projeto suspenso e/ou abortado pelo cliente";
+                    return "Projeto suspenso e/ou abortado pelo cliente.";
 
                 case SituacaoAtividade.AguardandoSolicitante:
-                    return "Atividade no aguardo de homologação do cliente ou outra ação relevante do cliente";
+                    return "Atividade no aguardo de homologação do cliente ou outra ação relevante do cliente.";
 
                 case SituacaoAtividade.Aberto:
-                    return "Atividade pendente de início";
+                    return "Atividade pendente de início.";
                 case SituacaoAtividade.Homologacao:
-                    return "Atividade pendente de homologação pelo cliente";
+                    return "Atividade pendente de homologação pelo cliente.";
                 case SituacaoAtividade.DeployProducao:
                     return "Atividade pendente de publicação em Produção (aplicação) ou execução de script de correção na tabela.";
                 case SituacaoAtividade.AguardandoDesenvolvimento:
-                    return "Atividade pendente de ação de desenvolvimento";
+                    return "Atividade pendente de ação de desenvolvimento.";
                 case SituacaoAtividade.RevisãoTecnica:
                     return "Atividade em análise técnica.";
                 default:
-                    return "Situação não reconhecida";
+                    return "Situação não reconhecida.";
             }
         }
     }
@@ -138,29 +139,31 @@ namespace GestaoDemandas.Enumeradores
             switch (complemento)
             {
                 case Complemento.ElaboracaoDocumentacaoTecnica:
-                    return ".Elaboração da Documentação Técnica.";
+                    return " Elaboração da Documentação Técnica.";
                 case Complemento.Impedido:
-                    return ".Atividade com algum impedimento de concluir a atividade.";
+                    return " Atividade com algum impedimento de concluir a atividade.";
                 case Complemento.AguardandoCliente:
-                    return ".Atividade com pendência de ação do cliente ou homologação da funcionalidade";
+                    return " Atividade com pendência de ação do cliente ou homologação da funcionalidade";
                 case Complemento.EmTeste:
-                    return ".Atividade Em Teste.";
+                    return " Atividade Em Teste.";
                 case Complemento.SuspensoTemporariamente:
-                    return ". Atividade supenso temporariamente pelo cliente para atendimento de outra(s) demandas";
+                    return " Atividade supenso temporariamente pelo cliente para atendimento de outra(s) demandas";
                 case Complemento.ExecuçãoScript:
-                    return ". Criação de script de ajuste de alguma correção em Tabelas.";
+                    return " Criação de script de ajuste de alguma correção em Tabelas.";
                 case Complemento.Aguardando:
-                    return ". Também depende de uma ação do cliente de homologação.";
+                    return " Também depende de uma ação do cliente de homologação.";
                 case Complemento.Pendente_COFI:
-                    return ". Também depende de uma ação de outra(s) equipe(s) para o desenvolvimento necessário.";
+                    return " Também depende de uma ação de outra(s) equipe(s) para o desenvolvimento necessário.";
                 case Complemento.AguardandoDeploy:
-                    return ". Atividade na esteira de publicação em produção.";
+                    return " Atividade na esteira de publicação em produção.";
                 case Complemento.TesteFinalizado:
-                    return ". Teste da funcionalidade concluída conforme solicitado.";
+                    return " Teste da funcionalidade concluída conforme solicitado.";
                 case Complemento.EmailCliente:
-                    return ". Enviado e-mail ao cliente. No aguardo do feedback.";
+                    return " Enviado e-mail ao cliente. No aguardo do feedback.";
                 case Complemento.AtividadeCancelado:
-                    return ". Atividade cancelado por não haver necessidade.";
+                    return " Atividade cancelado por não haver necessidade.";
+                case Complemento.ManualUsuario:
+                    return " Atividade finalizada. Elaboração manual do usuário.";
                 default:
                     return null;
             }
@@ -193,8 +196,10 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.EmailCliente;
                 case "Em Teste":
                     return Complemento.EmTeste;
-                case "Atividade Cancelado":
+                case "Atividade Cancelada":
                     return Complemento.AtividadeCancelado;
+                case "Manual Usuario":
+                    return Complemento.ManualUsuario;
                 default: return null;   
             }
         }

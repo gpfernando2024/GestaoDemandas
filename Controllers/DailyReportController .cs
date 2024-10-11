@@ -711,13 +711,31 @@ namespace GestaoDemandas.Controllers
                     CreateInfoParagraph(doc, "• Abertura", item.DataAbertura?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Início", item.DataInicioAtendimento != default ? item.DataInicioAtendimento?.ToString("dd/MM/yyyy") : "N/A");
                     CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega != default ? item.DataPrevistaEntrega?.ToString("dd/MM/yyyy") : "N/A");
+                    //CreateInfoParagraph(doc, "• Previsão", item.DataPrevistaEntrega?.ToString("dd/MM/yyyy"));
                     CreateInfoParagraph(doc, "• Status", item.Status);
-                    CreateInfoParagraph(doc, "• Data Conclusão", item.DataRealEntrega != default ? item.DataRealEntrega?.ToString("dd/MM/yyyy") : "N/A");
-                    //CreateInfoParagraph(doc, "• Observação", item.Observacao);
+                    CreateInfoParagraph(doc, "• Data Conclusão", item.Conclusao != default ? item.Conclusao?.ToString("dd/MM/yyyy") : "N/A");
                     SituacaoAtividade? situacao = SituacaoAtividadeExtensions.FromString(item.Status);
-                    string primeiroStatus = item.TagNames != null ? item.TagNames.Split(';')[0] : "N/A";
-                    Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus); 
-                    CreateInfoParagraph(doc, "• Observação", ObservacaoHelper.ObterObservacao(situacao));
+                    // Verificar se TagNames está preenchido e contém o separador
+                    string primeiroStatus = "N/A"; // Valor padrão caso não seja possível extrair o status
+                    if (!string.IsNullOrEmpty(item.TagNames))
+                    {
+                        string[] tags = item.TagNames.Split(';');
+
+                        // Verificar se existe ao menos um status na string
+                        if (tags.Length > 0)
+                        {
+                            primeiroStatus = tags[0]; // Pegar o primeiro status
+                        }
+                    }
+                    Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus);
+                    if (complemento == Complemento.AtividadeCancelado || complemento == Complemento.ManualUsuario)
+                    {
+                        CreateInfoParagraph(doc, "Observação", $"{ComplementoObservacao.ObterComplemento(complemento)}");
+                    }
+                    else
+                    {
+                        CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
+                    }
 
 
 
@@ -837,9 +855,9 @@ namespace GestaoDemandas.Controllers
                         }
                     }
                     Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus);
-                    if (primeiroStatus == "Atividade Cancelada")
+                    if (complemento == Complemento.EmTeste && situacao == SituacaoAtividade.Desenvolvimento)
                         {
-                        CreateInfoParagraph(doc, "Observação", $"{ComplementoObservacao.ObterComplemento(complemento)}");
+                        CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
                     }
                     else 
                     {
