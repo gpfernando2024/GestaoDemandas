@@ -1,7 +1,9 @@
 ﻿using GestaoDemandas.Enumeradores;
 using Microsoft.Ajax.Utilities;
+using NPOI.HSSF.Record.Chart;
 using System;
 using System.Collections.Generic;
+using System.EnterpriseServices.CompensatingResourceManager;
 using System.Linq;
 using System.Web;
 
@@ -47,7 +49,8 @@ namespace GestaoDemandas.Enumeradores
         TesteFinalizado,
         EmailCliente,
         AtividadeCancelado,
-        ManualUsuario
+        ManualUsuario,
+        AtividadeImpedidoReuniaoCliente
     }
         
 
@@ -164,6 +167,8 @@ namespace GestaoDemandas.Enumeradores
                     return " Atividade cancelado por não haver necessidade.";
                 case Complemento.ManualUsuario:
                     return " Atividade finalizada. Elaboração manual do usuário.";
+                case Complemento.AtividadeImpedidoReuniaoCliente:
+                    return "Atividade com impedimento. Motivo: Regra de negócio já implementado. Reunião com o cliente solicitado.";
                 default:
                     return null;
             }
@@ -200,6 +205,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.AtividadeCancelado;
                 case "Manual Usuario":
                     return Complemento.ManualUsuario;
+                case "Atividade Impedido":
+                    return Complemento.AtividadeImpedidoReuniaoCliente;
                 default: return null;   
             }
         }
