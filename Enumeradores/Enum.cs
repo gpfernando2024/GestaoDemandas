@@ -50,7 +50,8 @@ namespace GestaoDemandas.Enumeradores
         EmailCliente,
         AtividadeCancelado,
         ManualUsuario,
-        AtividadeImpedidoReuniaoCliente
+        AtividadeImpedidoReuniaoCliente,
+        ElaboracaoRequisito
     }
         
 
@@ -169,6 +170,8 @@ namespace GestaoDemandas.Enumeradores
                     return " Atividade finalizada. Elaboração manual do usuário.";
                 case Complemento.AtividadeImpedidoReuniaoCliente:
                     return "Atividade com impedimento. Motivo: Regra de negócio já implementado. Reunião com o cliente solicitado.";
+                case Complemento.ElaboracaoRequisito:
+                    return "Elaboração da proposta técnica.";
                 default:
                     return null;
             }
@@ -207,6 +210,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.ManualUsuario;
                 case "Atividade Impedido":
                     return Complemento.AtividadeImpedidoReuniaoCliente;
+                case "Elaboração Requisito":
+                    return Complemento.ElaboracaoRequisito;
                 default: return null;   
             }
         }
