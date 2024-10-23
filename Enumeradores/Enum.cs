@@ -53,7 +53,8 @@ namespace GestaoDemandas.Enumeradores
         AtividadeImpedidoReuniaoCliente,
         ElaboracaoRequisito,
         ReunicaoCliente,
-        AtividadeFinalizado
+        AtividadeFinalizado,
+        AprovacaoRequisito
     }
         
 
@@ -167,7 +168,7 @@ namespace GestaoDemandas.Enumeradores
                 case Complemento.EmailCliente:
                     return " Enviado e-mail ao cliente. No aguardo do feedback.";
                 case Complemento.AtividadeCancelado:
-                    return " Atividade cancelado por não haver necessidade.";
+                    return " Atividade cancelado por não haver necessidade. Não foi identificado nenhum problema com a aplicação.";
                 case Complemento.ManualUsuario:
                     return " Atividade finalizada. Elaboração manual do usuário.";
                 case Complemento.AtividadeImpedidoReuniaoCliente:
@@ -178,6 +179,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Realizado reunião com o cliente para tratar de assuntos de dúvidas ou novas demandas.";
                 case Complemento.AtividadeFinalizado:
                     return "Atividade finalizada. Não foi identificado nenhum problema com a aplicação.";
+                case Complemento.AprovacaoRequisito:
+                    return "Atividade pendente da aprovação do documento de requisitos pelo cliente.";
                 default:
                     return null;
             }
@@ -221,7 +224,9 @@ namespace GestaoDemandas.Enumeradores
                 case "Reunião Cliente":
                     return Complemento.ReunicaoCliente;
                 case "Atividade Finalizada":
-                    return Complemento.AtividadeFinalizado;    
+                    return Complemento.AtividadeFinalizado;
+                case "Aprovação Requisito":
+                    return Complemento.AprovacaoRequisito;
                 default: return null;   
             }
         }
