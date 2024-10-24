@@ -54,7 +54,8 @@ namespace GestaoDemandas.Enumeradores
         ElaboracaoRequisito,
         ReunicaoCliente,
         AtividadeFinalizado,
-        AprovacaoRequisito
+        AprovacaoRequisito,
+        AguardandoDefinicao
     }
         
 
@@ -181,6 +182,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade finalizada. Não foi identificado nenhum problema com a aplicação.";
                 case Complemento.AprovacaoRequisito:
                     return "Atividade pendente da aprovação do documento de requisitos pelo cliente.";
+                case Complemento.AguardandoDefinicao:
+                    return "Atividade no aguardo da definição da regra de negócio.";
                 default:
                     return null;
             }
@@ -227,6 +230,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.AtividadeFinalizado;
                 case "Aprovação Requisito":
                     return Complemento.AprovacaoRequisito;
+                case "Aguardando Definição":
+                    return Complemento.AguardandoDefinicao;
                 default: return null;   
             }
         }
