@@ -279,23 +279,45 @@ namespace GestaoDemandas.Controllers
                     }
 
                     // Verificar se a data de real de entrega é igual à data atual
-                    
+
                     if (eventItem.DataRealEntrega.HasValue)
                     {
                         DateTime conclusaoData;
-                        bool isValidFormat = DateTime.TryParseExact(eventItem.DataRealEntrega.Value.ToString("dd/MM/yyyy"),
-                                                                    "dd/MM/yyyy",
-                                                                    System.Globalization.CultureInfo.InvariantCulture,
-                                                                    System.Globalization.DateTimeStyles.None,
-                                                                    out conclusaoData);
-                        conclusaoData = conclusaoData.AddDays(1);
+                        bool isValidFormat = DateTime.TryParseExact(
+                            eventItem.DataRealEntrega.Value.ToString("dd/MM/yyyy"),
+                            "dd/MM/yyyy",
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.None,
+                            out conclusaoData
+                        );
 
-                        if (isValidFormat && conclusaoData.Date == DateTime.Today)
+                        if (isValidFormat)
                         {
-                            items.Add(eventItem);
+                            // Se for quinta-feira, soma 4 dias
+                            if (conclusaoData.DayOfWeek == DayOfWeek.Thursday)
+                            {
+                                conclusaoData = conclusaoData.AddDays(4); // Até segunda
+                            }
+                            // Se for sexta-feira, soma 3 dias
+                            else if (conclusaoData.DayOfWeek == DayOfWeek.Friday)
+                            {
+                                conclusaoData = conclusaoData.AddDays(3); // Até Segunda
+                            }
+                            // Caso contrário, soma apenas 1 dia
+                            else
+                            {
+                                conclusaoData = conclusaoData.AddDays(1);
+                            }
+
+                            // Verifica se a data ajustada é hoje
+                            if (conclusaoData.Date == DateTime.Today)
+                            {
+                                items.Add(eventItem);
+                            }
                         }
                     }
-                    
+
+
                 }
             }
             return items;
@@ -592,7 +614,7 @@ namespace GestaoDemandas.Controllers
             //DateTime yesterday = DateTime.Now.AddDays(-1);
             //DateTime yesterday = DateTime.Now;
             DateTime today = DateTime.Now.Date;  // Data atual
-
+            
             XWPFParagraph sectionTitle = doc.CreateParagraph();
             sectionTitle.Alignment = ParagraphAlignment.LEFT;
             sectionTitle.SpacingAfter = 0; // Remove o espaçamento após o parágrafo
@@ -641,12 +663,18 @@ namespace GestaoDemandas.Controllers
             Eventos em andamento na SEDUC:
             Entregas do dia:
             */
+
             var groupedEvents = eventsDeliveries
-               .Where(e => e.Status == "Concluido" &&
-                           e.Custom_Sistema == "Transporte Escolar" &&
-                           e.DataRealEntrega.HasValue &&
-                           e.DataRealEntrega.Value.AddDays(1).Date == today)  // Verifique a data específica de conclusão
-               .GroupBy(e => e.Custom_Sistema);
+                .Where(e => e.Status == "Concluido" &&
+                            e.Custom_Sistema == "Transporte Escolar" &&
+                            e.DataRealEntrega.HasValue &&
+                            // Lógica para somar dias conforme o dia da semana
+                            (e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Thursday
+                                ? e.DataRealEntrega.Value.AddDays(4).Date // De quinta até segunda
+                                : e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Friday
+                                    ? e.DataRealEntrega.Value.AddDays(3).Date // De sexta até segunda
+                                    : e.DataRealEntrega.Value.AddDays(1).Date) == today) // Soma 1 dia para outros dias
+                .GroupBy(e => e.Custom_Sistema);
 
             // Verificando se há eventos agrupados
             if (groupedEvents.Any())
@@ -665,6 +693,7 @@ namespace GestaoDemandas.Controllers
             {
                 Console.WriteLine("Nenhum evento encontrado para os critérios especificados.");
             }
+
 
             int systemCounter = 1;
 
@@ -734,7 +763,8 @@ namespace GestaoDemandas.Controllers
                     }
                     else
                     {
-                        CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
+                        //CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)}");
+                        CreateInfoParagraph(doc, "Observação", $"{ObservacaoHelper.ObterObservacao(situacao)} {ComplementoObservacao.ObterComplemento(complemento)} {item.DataRealEntrega?.ToShortDateString() ?? "N/A"}");
                     }
 
 

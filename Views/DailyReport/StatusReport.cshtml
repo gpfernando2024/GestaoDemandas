@@ -94,9 +94,21 @@
                                        System.Globalization.DateTimeStyles.None,
                                        out DateTime conclusaoData))
             {
-                // Subtrair um dia da data de entrega real
-                conclusaoData = conclusaoData.AddDays(1);
+                // Lógica para somar os dias até segunda-feira
+                if (conclusaoData.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    conclusaoData = conclusaoData.AddDays(4); // De quinta até segunda
+                }
+                else if (conclusaoData.DayOfWeek == DayOfWeek.Friday)
+                {
+                    conclusaoData = conclusaoData.AddDays(3); // De sexta até segunda
+                }
+                else
+                {
+                    conclusaoData = conclusaoData.AddDays(1); // Soma 1 dia para outros dias
+                }
 
+                // Verifica se a data ajustada é hoje
                 if (conclusaoData.Date == DateTime.Today)
                 {
                     <tr>

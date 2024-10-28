@@ -1,4 +1,5 @@
-﻿using GestaoDemandas.Enumeradores;
+﻿using DocumentFormat.OpenXml.Office.CustomUI;
+using GestaoDemandas.Enumeradores;
 using Microsoft.Ajax.Utilities;
 using NPOI.HSSF.Record.Chart;
 using System;
@@ -73,7 +74,8 @@ namespace GestaoDemandas.Enumeradores
                     else if (dataPublicacao.DayOfWeek == DayOfWeek.Sunday)
                         dataPublicacao = dataPublicacao.AddDays(-3);
 
-                    return $"Publicado em Produção: {dataPublicacao.ToShortDateString()}";
+                    //return $"Publicado em Produção: {dataPublicacao.ToShortDateString()}";
+                    return $"Publicado em Produção: ";
 
                 case SituacaoAtividade.Análise:
                     return "Em análise";
