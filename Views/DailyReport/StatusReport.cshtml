@@ -80,6 +80,7 @@
             <th>Início</th>
             <th>Status</th>
             <th>Previsão</th>
+            <th>Entrega Real</th>
             <!--
             <th>Observação</th>
         -->
@@ -123,10 +124,11 @@
                             }
                         </td>
                         <td>@item.Status</td>
-                        <td>@(item.DataPrevistaEntrega != null ? item.DataPrevistaEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.DataRealEntrega != null ? item.DataRealEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
                         <!--
-                        <td>@item.Observacao</td>
-                    -->
+                         <td>@item.Observacao</td>
+                        -->
                         <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                     </tr>
                 }
