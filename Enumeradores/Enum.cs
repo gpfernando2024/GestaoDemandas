@@ -81,7 +81,7 @@ namespace GestaoDemandas.Enumeradores
                     return "Em análise";
 
                 case SituacaoAtividade.SuspensoTemp:
-                    return "Atividade suspensa temporariamente para atendimento de outras demandas urgentes ou projeto/atividade suspenso por decisão do cliente.";
+                    return "Atividade suspensa temporariamente para atendimento de outras demandas urgentes. ";
 
                 case SituacaoAtividade.Desenvolvimento:
                     return "Atividade em desenvolvimento.";
