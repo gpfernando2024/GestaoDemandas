@@ -10,6 +10,9 @@ using System.Web;
 
 namespace GestaoDemandas.Enumeradores
 {
+    /// <summary>
+    /// Classe que representa Enumeração da situação padrão da atividade Azure DevOps
+    /// </summary>
     public enum SituacaoAtividade
     {
         /*Status Atividade: 
@@ -22,20 +25,54 @@ namespace GestaoDemandas.Enumeradores
          Deploy Producao = 7,
          Aguardando Solicitante = 8
          */
-
+        /// <summary>
+        /// Enumeração - Aberto = 0
+        /// </summary>
         Aberto,
+        /// <summary>
+        /// Enumeração - Concluido = 1
+        /// </summary>
         Concluido,
+        /// <summary>
+        /// Enumeração - SuspensoTemp = 2
+        /// </summary>
         SuspensoTemp,
+        /// <summary>
+        /// Enumeração - Desenvolvimento = 3
+        /// </summary>
         Desenvolvimento,
+        /// <summary>
+        /// Enumeração - AguardandoSolicitante = 4
+        /// </summary>
         AguardandoSolicitante,
+        /// <summary>
+        /// Enumeração - Suspenso = 5
+        /// </summary>
         Suspenso,
+        /// <summary>
+        /// Enumeração - Análise = 6
+        /// </summary>
         Análise,
+        /// <summary>
+        /// Enumeração - Homologacao = 7
+        /// </summary>
         Homologacao,
+        /// <summary>
+        /// Enumeração - DeployProducao = 8
+        /// </summary>
         DeployProducao,
+        /// <summary>
+        /// Enumeração - AguardandoDesenvolvimento = 9
+        /// </summary>
         AguardandoDesenvolvimento,
+        /// <summary>
+        /// Enumeração - RevisãoTecnica = 10
+        /// </summary>
         RevisãoTecnica
     }
-
+    /// <summary>
+    /// Classe enumeração definido complemento da observação 
+    /// </summary>
     public enum Complemento
     {
         EmTeste,

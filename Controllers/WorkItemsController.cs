@@ -43,6 +43,9 @@ Campos DevOps Analytics
 
 namespace GestaoDemandas.Controllers
 {
+ /// <summary>
+ /// Classe que representa controle do lista de atividade - WorkItems Analytics
+ /// </summary>
     public class WorkItemsController : Controller
     {
         private static readonly HttpClient httpClient;
@@ -60,6 +63,26 @@ namespace GestaoDemandas.Controllers
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
 
+        /// <summary>
+        /// Classe que representa a lista de atividades no Azure DevOps (Boards)
+        /// Possui filtros de pesquisa
+        /// </summary>
+        /// <param name="searchId"></param>
+        /// <param name="searchDataAbertura"></param>
+        /// <param name="searchDataPrevisaoEntrega"></param>
+        /// <param name="searchDataFechamento"></param>
+        /// <param name="searchDataInicio"></param>
+        /// <param name="searchDataConclusao"></param>
+        /// <param name="searchDataRealEntrega"></param>
+        /// <param name="searchStatus"></param>
+        /// <param name="searchPrioridade"></param>
+        /// <param name="searchSistema"></param>
+        /// <param name="searchTeam"></param>
+        /// <param name="team"></param>
+        /// <param name="clear"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         public async Task<ActionResult> Index(string searchId, string searchDataAbertura, string searchDataPrevisaoEntrega,  string searchDataFechamento,  string searchDataInicio, string searchDataConclusao, string searchDataRealEntrega,   string searchStatus, string searchPrioridade, string searchSistema, string searchTeam, string team, bool clear = false, int page = 1, int pageSize = 160)
         {
             if (clear)

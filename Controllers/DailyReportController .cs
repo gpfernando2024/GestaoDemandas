@@ -62,6 +62,9 @@ using System.Web.Services.Description;
 namespace GestaoDemandas.Controllers
 {
       
+    /// <summary>
+    /// Classe que representa Report Diário - Status Report gerando em documento DOCX
+    /// </summary>
     public class DailyReportController : Controller
     {
         private static readonly string AzureAnalyticsUrl = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v4.0-preview/WorkItems?$filter=(indexof(Custom_Sistema, 'Transporte Escolar') ge 0 or indexof(Custom_Sistema, 'Indicação Escolas PEI') ge 0 or indexof(Custom_Sistema, 'PLACON') ge 0) and WorkItemType eq 'User Story'        &$select=WorkItemId,TagNames, Custom_Atividade,Title,State,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto, Custom_SemanaProdesp,Custom_EntregaValor, Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc, Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega,Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef&$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
@@ -71,12 +74,22 @@ namespace GestaoDemandas.Controllers
 
         private SituacaoAtividade Status;
 
+        /// <summary>
+        /// Classe que representa a lista em tela das atividades no formato Report Diário
+        /// </summary>
+        /// <returns></returns>
         public async Task<ActionResult> StatusReport()
         {
             var model = await GetDailyReportData();
             return View(model);
         }
 
+        /// <summary>
+        /// Classe que representa a geração do Report Diário em DOCX
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<ActionResult> GenerateDocx(DailyReportViewModel model)
         {
             var currentDate = DateTime.Now.ToString("dd/MM/yyyy");
