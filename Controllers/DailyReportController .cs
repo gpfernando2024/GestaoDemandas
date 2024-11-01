@@ -307,14 +307,19 @@ namespace GestaoDemandas.Controllers
                         if (isValidFormat)
                         {
                             // Se for quinta-feira, soma 4 dias
+                            // Se for quinta-feira, soma 4 dias, a menos que seja dia 30 ou 31
                             if (conclusaoData.DayOfWeek == DayOfWeek.Thursday)
                             {
-                                conclusaoData = conclusaoData.AddDays(4); // Até segunda
+                                conclusaoData = (conclusaoData.Day == 30 || conclusaoData.Day == 31)
+                                    ? conclusaoData.AddDays(1)
+                                    : conclusaoData.AddDays(4); // Até segunda
                             }
-                            // Se for sexta-feira, soma 3 dias
+                            // Se for sexta-feira, soma 3 dias, a menos que seja dia 30 ou 31
                             else if (conclusaoData.DayOfWeek == DayOfWeek.Friday)
                             {
-                                conclusaoData = conclusaoData.AddDays(3); // Até Segunda
+                                conclusaoData = (conclusaoData.Day == 30 || conclusaoData.Day == 31)
+                                    ? conclusaoData.AddDays(1)
+                                    : conclusaoData.AddDays(3); // Até segunda
                             }
                             // Caso contrário, soma apenas 1 dia
                             else
@@ -329,7 +334,6 @@ namespace GestaoDemandas.Controllers
                             }
                         }
                     }
-
 
                 }
             }
@@ -678,16 +682,27 @@ namespace GestaoDemandas.Controllers
             */
 
             var groupedEvents = eventsDeliveries
-                .Where(e => e.Status == "Concluido" &&
-                            e.Custom_Sistema == "Transporte Escolar" &&
-                            e.DataRealEntrega.HasValue &&
-                            // Lógica para somar dias conforme o dia da semana
-                            (e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Thursday
-                                ? e.DataRealEntrega.Value.AddDays(4).Date // De quinta até segunda
-                                : e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Friday
-                                    ? e.DataRealEntrega.Value.AddDays(3).Date // De sexta até segunda
-                                    : e.DataRealEntrega.Value.AddDays(1).Date) == today) // Soma 1 dia para outros dias
-                .GroupBy(e => e.Custom_Sistema);
+            .Where(e => e.Status == "Concluido" &&
+                        e.Custom_Sistema == "Transporte Escolar" &&
+                        e.DataRealEntrega.HasValue &&
+                        // Lógica para somar dias conforme o dia da semana, mas adiciona apenas 1 dia se for dia 30 ou 31
+                        ((e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Thursday
+                            ? (e.DataRealEntrega.Value.Day >= 30
+                                ? e.DataRealEntrega.Value.AddDays(1).Date
+                                : e.DataRealEntrega.Value.AddDays(4).Date) // De quinta até segunda ou apenas 1 dia se dia 30 ou 31
+                            : e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Friday
+                                ? (e.DataRealEntrega.Value.Day >= 30
+                                    ? e.DataRealEntrega.Value.AddDays(1).Date
+                                    : e.DataRealEntrega.Value.AddDays(3).Date) // De sexta até segunda ou apenas 1 dia se dia 30 ou 31
+                                : e.DataRealEntrega.Value.AddDays(1).Date)) == today) // Soma 1 dia para outros dias
+            .GroupBy(e => e.Custom_Sistema);
+
+            // Função auxiliar para ajustar a data ao primeiro dia do próximo mês se ultrapassar o último dia do mês
+            DateTime AdjustDate(DateTime date)
+            {
+                int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
+                return date.Day > daysInMonth ? new DateTime(date.Year, date.Month, 1).AddMonths(1) : date;
+            }
 
             // Verificando se há eventos agrupados
             if (groupedEvents.Any())
