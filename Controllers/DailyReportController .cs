@@ -785,7 +785,7 @@ namespace GestaoDemandas.Controllers
                         }
                     }
                     Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus);
-                    if (complemento == Complemento.AtividadeCancelado || complemento == Complemento.ManualUsuario)
+                    if (complemento == Complemento.AtividadeCancelado || complemento == Complemento.ManualUsuario || complemento == Complemento.ExecutadoScript)
                     {
                         CreateInfoParagraph(doc, "Observação", $"{ComplementoObservacao.ObterComplemento(complemento)}");
                     }

@@ -93,7 +93,8 @@ namespace GestaoDemandas.Enumeradores
         ReunicaoCliente,
         AtividadeFinalizado,
         AprovacaoRequisito,
-        AguardandoDefinicao
+        AguardandoDefinicao,
+        ExecutadoScript
     }
         
 
@@ -223,6 +224,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade pendente da aprovação do documento de requisitos pelo cliente.";
                 case Complemento.AguardandoDefinicao:
                     return "Atividade no aguardo da definição da regra de negócio.";
+                case Complemento.ExecutadoScript:
+                    return "Foi executado o script de correção e/ou ajuste na tabela.";
                 default:
                     return null;
             }
@@ -271,6 +274,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.AprovacaoRequisito;
                 case "Aguardando Definição":
                     return Complemento.AguardandoDefinicao;
+                case "Executado Script":
+                    return Complemento.ExecutadoScript;
                 default: return null;   
             }
         }
