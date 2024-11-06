@@ -8,8 +8,11 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Util;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using GestaoDemandas.Models;
 using Newtonsoft.Json;
+using NPOI.SS.Formula.Functions;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace GestaoDemandas.Controllers
 {
@@ -30,7 +33,7 @@ namespace GestaoDemandas.Controllers
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
 
-        public async Task<ActionResult> Index(int page = 1, int pageSize = 160)
+        public async Task<ActionResult> Index(string SearchipelineSK, string SearchRunNumber, int page = 1, int pageSize = 160, bool clear = false)
         {
             var url = "https://analytics.dev.azure.com/devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v4.0-preview/PipelineRuns?%20&$select=PipelineRunId,StartedDateSK,CompletedDate,RunNumber,RunReason,QueuedDate,SucceededCount,QueueDurationSeconds%20&$expand=Pipeline($select=PipelineSK,PipelineId,PipelineName),Project($select=ProjectId,ProjectName),Branch($select=RepositoryId,BranchName,AnalyticsUpdatedDate)&$orderby=PipelineRunId%20desc";
 
@@ -52,13 +55,37 @@ namespace GestaoDemandas.Controllers
                 // Deserialize the JSON to a list of PipelineRun objects
                 var pipelineRuns = responseObj.value;
 
+                if (clear)
+                {
+                    // Clear search parameters and return the initial list of Pipelines
+                    SearchipelineSK = null;
+                    SearchRunNumber = null;
+                    ViewBag.SearchRunNumber = null;
+                    ViewBag.SearchipelineSK = null;
+
+                }
+                // Filtrar workItems com base nos critérios de pesquisa
+                if (!string.IsNullOrEmpty(SearchipelineSK))
+                {
+                    pipelineRuns = pipelineRuns.Where(w => w.pipeline.PipelineSK.ToString().Contains(SearchipelineSK)).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(SearchRunNumber))
+                {
+                    pipelineRuns = pipelineRuns.Where(w => w.RunNumber.ToString().Contains(SearchRunNumber)).ToList();
+                }
+
                 // Pagination logic
                 var totalItems = pipelineRuns.Count;
                 var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
                 var itemsToDisplay = pipelineRuns.Skip((page - 1) * pageSize).Take(pageSize).ToList();
                 ViewBag.CurrentPage = page;
                 ViewBag.TotalPages = totalPages;
-                return View(itemsToDisplay);
+
+                ViewBag.SearchRunNumber = SearchRunNumber;
+                ViewBag.SearchipelineSK = SearchipelineSK;
+
+                return View(pipelineRuns.Take(10));
 
             }
             catch (JsonSerializationException ex)
