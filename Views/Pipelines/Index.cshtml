@@ -44,6 +44,7 @@
                             <th>Projeto</th>
                             <th>Descrição Pipeline</th>
                             <th>Cód. Pipeline</th>
+                            <th>Nome Branch</th>
                             <th>Data/Hora Deploy</th>
                         </tr>
                     </thead>
@@ -57,10 +58,11 @@
                                 <td>@item.project.ProjectName</td>
                                 <td>@item.pipeline.PipelineName</td>
                                 <td>@item.pipeline.PipelineSK</td>
+                                <td>@(item.branch?.BranchName ?? "")</td>
                                 <td>
                                     @(item.CompletedDate.HasValue == true
-                ? item.CompletedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
-:               "")
+                                        ? item.CompletedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
+:                                   "")
                                 </td>
                             </tr>
                         }

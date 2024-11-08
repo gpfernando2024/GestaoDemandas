@@ -40,7 +40,7 @@ namespace GestaoDemandas.Models
         public string QueueDurationSeconds { get; set; }
         public Pipeline pipeline { get; set; }
         public Project project { get; set; }
-        public Branch BranchTo { get; set; }
+        public Branch branch { get; set; }
         
         public class Pipeline
         {
