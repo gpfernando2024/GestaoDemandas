@@ -28,7 +28,7 @@ namespace GestaoDemandas.Controllers
             };
 
             // Add Personal Access Token (PAT) for authentication
-            var pat = "m7z3rlvo5kqaet4yrw7g2am5bp6rxu6optb77vf5x7gqxrw6tb3a"; // Replace with your PAT
+            var pat = "wucpcjzts6okeheohrgfdntvtf5pfyism6rbrlmtdxlbeldzb7za"; // Replace with your PAT
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
