@@ -363,6 +363,7 @@ namespace GestaoDemandas.Controllers
                     status == "Homologacao" ||
                     status == "Aguardando Solicitante" ||
                     status == "Revisão Técnica" ||
+                    status == "Testes Retorno" ||
                     status == "Aguardando Desenvolvimento" &&
                     //(customSistema == "Transporte Escolar" || customSistema == "Indicação de Escolas PEI" || customSistema == "PLACON"))
                     (customSistema == "Transporte Escolar"))
@@ -785,7 +786,8 @@ namespace GestaoDemandas.Controllers
                         }
                     }
                     Complemento? complemento = ComplementoExtensions.FromString(primeiroStatus);
-                    if (complemento == Complemento.AtividadeCancelado || complemento == Complemento.ManualUsuario || complemento == Complemento.ExecutadoScript)
+                    if (complemento == Complemento.AtividadeCancelado || complemento == Complemento.ManualUsuario || 
+                        complemento == Complemento.ExecutadoScript)
                     {
                         CreateInfoParagraph(doc, "Observação", $"{ComplementoObservacao.ObterComplemento(complemento)}");
                     }
@@ -823,7 +825,7 @@ namespace GestaoDemandas.Controllers
 
         private void AddOngoingProjects(XWPFDocument doc, List<ProjectItem> ongoingProjects)
         {
-            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao", "Revisão Técnica", "Aguardando Desenvolvimento" };
+            string[] validStatuses = { "Aberto", "Desenvolvimento", "Análise", "Suspenso", "Suspenso - Temp", "Suspenso-Temp", "Aguardando Solicitante", "Homologacao", "Deploy Producao", "Revisão Técnica", "Aguardando Desenvolvimento", "Testes Retorno" };
             string[] validSistemas = { "Transporte Escolar" };
 
             XWPFParagraph sectionTitle = doc.CreateParagraph();

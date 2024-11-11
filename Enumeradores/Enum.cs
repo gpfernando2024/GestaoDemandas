@@ -68,7 +68,8 @@ namespace GestaoDemandas.Enumeradores
         /// <summary>
         /// Enumeração - RevisãoTecnica = 10
         /// </summary>
-        RevisãoTecnica
+        RevisãoTecnica,
+        TestesRetorno
     }
     /// <summary>
     /// Classe enumeração definido complemento da observação 
@@ -94,7 +95,8 @@ namespace GestaoDemandas.Enumeradores
         AtividadeFinalizado,
         AprovacaoRequisito,
         AguardandoDefinicao,
-        ExecutadoScript
+        ExecutadoScript,
+        RetornoTeste
     }
         
 
@@ -140,6 +142,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade pendente de ação de desenvolvimento.";
                 case SituacaoAtividade.RevisãoTecnica:
                     return "Atividade em análise técnica.";
+                case SituacaoAtividade.TestesRetorno:
+                    return "Retorno do teste. Atividade com ajuste a serem feito.";
                 default:
                     return "Situação não reconhecida.";
             }
@@ -174,6 +178,8 @@ namespace GestaoDemandas.Enumeradores
                     return SituacaoAtividade.AguardandoDesenvolvimento;
                 case "Revisão Técnica":
                     return SituacaoAtividade.RevisãoTecnica;
+                case "Testes Retorno":
+                    return SituacaoAtividade.TestesRetorno;
                 default:
                     return null; // ou lance uma exceção
             }
@@ -226,6 +232,8 @@ namespace GestaoDemandas.Enumeradores
                     return "Atividade no aguardo da definição da regra de negócio.";
                 case Complemento.ExecutadoScript:
                     return "Foi executado o script de correção e/ou ajuste na tabela.";
+                case Complemento.RetornoTeste:
+                    return "Foi realizado o teste e retornado para ajuste. Atividade com correções a serem feitas.";
                 default:
                     return null;
             }
@@ -276,6 +284,8 @@ namespace GestaoDemandas.Enumeradores
                     return Complemento.AguardandoDefinicao;
                 case "Executado Script":
                     return Complemento.ExecutadoScript;
+                case "Retorno Teste":
+                    return Complemento.RetornoTeste;
                 default: return null;   
             }
         }
