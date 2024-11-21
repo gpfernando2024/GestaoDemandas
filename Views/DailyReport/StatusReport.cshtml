@@ -86,8 +86,22 @@
         -->
             <th>Conclusão</th>
         </tr>
+
+        @{
+            // Lista de feriados nacionais (pode ser expandida conforme necessário)
+            List<DateTime> feriadosNacionais = new List<DateTime>
+        {
+        new DateTime(DateTime.Today.Year, 1, 1), // Exemplo: Ano Novo (01/01)
+        new DateTime(DateTime.Today.Year, 4, 21), // Exemplo: Tiradentes (21/04)
+        new DateTime(DateTime.Today.Year, 9, 7),  // Exemplo: Independência (07/09)
+        new DateTime(DateTime.Today.Year, 11, 20),  // Exemplo: Dia da Consciência Negra (20/11)
+        // Adicione outros feriados nacionais conforme necessário
+        };
+
+        }
         @foreach (var item in Model.EventsDeliveries)
         {
+
             if (item.DataRealEntrega.HasValue &&
                 DateTime.TryParseExact(item.DataRealEntrega.Value.ToString("dd/MM/yyyy"),
                                        "dd/MM/yyyy",
@@ -110,7 +124,10 @@
                         : conclusaoData.AddDays(3); // Até segunda
                 }
                 // Caso contrário, soma apenas 1 dia
-                else
+                else if (feriadosNacionais.Contains(conclusaoData.AddDays(1)))
+                    {
+                        conclusaoData = conclusaoData.AddDays(1);
+                    }
                 {
                     conclusaoData = conclusaoData.AddDays(1);
                 }
@@ -133,8 +150,8 @@
                         <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                         <td>@(item.DataRealEntrega != null ? item.DataRealEntrega.Value.ToString("dd/MM/yyyy") : "")</td>
                         <!--
-                         <td>@item.Observacao</td>
-                        -->
+                     <td>@item.Observacao</td>
+                    -->
                         <td>@(item.Conclusao != null ? item.Conclusao.Value.ToString("dd/MM/yyyy") : "")</td>
                     </tr>
                 }

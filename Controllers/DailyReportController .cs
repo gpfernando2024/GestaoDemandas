@@ -291,8 +291,16 @@ namespace GestaoDemandas.Controllers
                         eventItem.DataPrevistaEntrega = item.Custom_DataPrevistaDaEntrega.Value;
                     }
 
+                    // Lista de feriados nacionais (pode ser expandida conforme necessário)
+                    List<DateTime> feriadosNacionais = new List<DateTime>
+{
+                    new DateTime(DateTime.Today.Year, 1, 1), // Exemplo: Ano Novo (01/01)
+                    new DateTime(DateTime.Today.Year, 4, 21), // Exemplo: Tiradentes (21/04)
+                    new DateTime(DateTime.Today.Year, 9, 7),  // Exemplo: Independência (07/09)
+                    new DateTime(DateTime.Today.Year, 11, 20),  // Exemplo: Independência (20/11)
+                    // Adicione outros feriados nacionais conforme necessário
+};
                     // Verificar se a data de real de entrega é igual à data atual
-
                     if (eventItem.DataRealEntrega.HasValue)
                     {
                         DateTime conclusaoData;
@@ -322,6 +330,10 @@ namespace GestaoDemandas.Controllers
                                     : conclusaoData.AddDays(3); // Até segunda
                             }
                             // Caso contrário, soma apenas 1 dia
+                            else if (feriadosNacionais.Contains(conclusaoData.AddDays(1)))
+                            {
+                                conclusaoData = conclusaoData.AddDays(2);
+                            }
                             else
                             {
                                 conclusaoData = conclusaoData.AddDays(1);
@@ -681,28 +693,59 @@ namespace GestaoDemandas.Controllers
             Eventos em andamento na SEDUC:
             Entregas do dia:
             */
+            // Lista de feriados nacionais (pode ser expandida conforme necessário)
+            List<DateTime> feriadosNacionais = new List<DateTime>
+            {
+                new DateTime(DateTime.Today.Year, 1, 1), // Exemplo: Ano Novo (01/01)
+                new DateTime(DateTime.Today.Year, 4, 21), // Exemplo: Tiradentes (21/04)
+                new DateTime(DateTime.Today.Year, 9, 7),  // Exemplo: Independência (07/09)
+                new DateTime(DateTime.Today.Year, 11, 20),  // Exemplo: Independência (20/11)
+            // Adicione outros feriados nacionais conforme necessário
+            };
 
             var groupedEvents = eventsDeliveries
-            .Where(e => e.Status == "Concluido" &&
-                        e.Custom_Sistema == "Transporte Escolar" &&
-                        e.DataRealEntrega.HasValue &&
-                        // Lógica para somar dias conforme o dia da semana, mas adiciona apenas 1 dia se for dia 30 ou 31
-                        ((e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Thursday
-                            ? (e.DataRealEntrega.Value.Day >= 30
-                                ? e.DataRealEntrega.Value.AddDays(1).Date
-                                : e.DataRealEntrega.Value.AddDays(4).Date) // De quinta até segunda ou apenas 1 dia se dia 30 ou 31
-                            : e.DataRealEntrega.Value.DayOfWeek == DayOfWeek.Friday
-                                ? (e.DataRealEntrega.Value.Day >= 30
-                                    ? e.DataRealEntrega.Value.AddDays(1).Date
-                                    : e.DataRealEntrega.Value.AddDays(3).Date) // De sexta até segunda ou apenas 1 dia se dia 30 ou 31
-                                : e.DataRealEntrega.Value.AddDays(1).Date)) == today) // Soma 1 dia para outros dias
-            .GroupBy(e => e.Custom_Sistema);
+               .Where(e => e.Status == "Concluido" &&
+                           e.Custom_Sistema == "Transporte Escolar" &&
+                           e.DataRealEntrega.HasValue &&
+                           AdjustDeliveryDate(e.DataRealEntrega.Value.AddDays(1), feriadosNacionais) == today)
+               .GroupBy(e => e.Custom_Sistema);
 
-            // Função auxiliar para ajustar a data ao primeiro dia do próximo mês se ultrapassar o último dia do mês
-            DateTime AdjustDate(DateTime date)
+            // Função para ajustar a data de entrega
+            DateTime AdjustDeliveryDate(DateTime deliveryDate, List<DateTime> feriados)
             {
-                int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
-                return date.Day > daysInMonth ? new DateTime(date.Year, date.Month, 1).AddMonths(1) : date;
+                DateTime adjustedDate;
+
+                // Se a data de entrega for um feriado, adicionar 2 dias
+                if (feriados.Contains(deliveryDate.Date))
+                {
+                    adjustedDate = deliveryDate.AddDays(1);
+                }
+                else if (deliveryDate.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    adjustedDate = deliveryDate.Day >= 30
+                        ? deliveryDate.AddDays(1)
+                        : deliveryDate.AddDays(4); // De quinta para segunda
+                }
+                else if (deliveryDate.DayOfWeek == DayOfWeek.Friday)
+                {
+                    adjustedDate = deliveryDate.Day >= 30
+                        ? deliveryDate.AddDays(1)
+                        : deliveryDate.AddDays(3); // De sexta para segunda
+                }
+                else
+                {
+                    adjustedDate = deliveryDate.AddDays(1); // Para outros dias
+                }
+
+                // Ajustar caso a nova data caia em um feriado ou fim de semana
+                while (feriados.Contains(adjustedDate) ||
+                       adjustedDate.DayOfWeek == DayOfWeek.Saturday ||
+                       adjustedDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    adjustedDate = adjustedDate.AddDays(1);
+                }
+
+                return adjustedDate;
             }
 
             // Verificando se há eventos agrupados
@@ -722,6 +765,7 @@ namespace GestaoDemandas.Controllers
             {
                 Console.WriteLine("Nenhum evento encontrado para os critérios especificados.");
             }
+
 
 
             int systemCounter = 1;
