@@ -314,13 +314,13 @@ namespace GestaoDemandas.Controllers
 
                         if (isValidFormat)
                         {
-                            // Se for quinta-feira, soma 4 dias
+                            // Se for quinta-feira, soma 1 dias mantem somar-se 1 dia
                             // Se for quinta-feira, soma 4 dias, a menos que seja dia 30 ou 31
                             if (conclusaoData.DayOfWeek == DayOfWeek.Thursday)
                             {
                                 conclusaoData = (conclusaoData.Day == 30 || conclusaoData.Day == 31)
                                     ? conclusaoData.AddDays(1)
-                                    : conclusaoData.AddDays(4); // Até segunda
+                                    : conclusaoData.AddDays(1); // Mantem somar-se 1 dia  
                             }
                             // Se for sexta-feira, soma 3 dias, a menos que seja dia 30 ou 31
                             else if (conclusaoData.DayOfWeek == DayOfWeek.Friday)
@@ -333,10 +333,6 @@ namespace GestaoDemandas.Controllers
                             else if (feriadosNacionais.Contains(conclusaoData.AddDays(1)))
                             {
                                 conclusaoData = conclusaoData.AddDays(2);
-                            }
-                            else
-                            {
-                                conclusaoData = conclusaoData.AddDays(1);
                             }
 
                             // Verifica se a data ajustada é hoje
@@ -707,7 +703,7 @@ namespace GestaoDemandas.Controllers
                .Where(e => e.Status == "Concluido" &&
                            e.Custom_Sistema == "Transporte Escolar" &&
                            e.DataRealEntrega.HasValue &&
-                           AdjustDeliveryDate(e.DataRealEntrega.Value.AddDays(1), feriadosNacionais) == today)
+                           AdjustDeliveryDate(e.DataRealEntrega.Value.AddDays(0), feriadosNacionais) == today)
                .GroupBy(e => e.Custom_Sistema);
 
             // Função para ajustar a data de entrega
@@ -722,15 +718,15 @@ namespace GestaoDemandas.Controllers
                 }
                 else if (deliveryDate.DayOfWeek == DayOfWeek.Thursday)
                 {
-                    adjustedDate = deliveryDate.Day >= 30
-                        ? deliveryDate.AddDays(1)
-                        : deliveryDate.AddDays(4); // De quinta para segunda
+                    adjustedDate = deliveryDate.Day == 30
+                        ? deliveryDate.AddDays(4) // De quinta para segunda
+                        : deliveryDate.AddDays(1); 
                 }
                 else if (deliveryDate.DayOfWeek == DayOfWeek.Friday)
                 {
-                    adjustedDate = deliveryDate.Day >= 30
-                        ? deliveryDate.AddDays(1)
-                        : deliveryDate.AddDays(3); // De sexta para segunda
+                    adjustedDate = deliveryDate.Day == 30
+                        ? deliveryDate.AddDays(3) // De sexta para segunda
+                        : deliveryDate.AddDays(1); 
                 }
                 else
                 {
