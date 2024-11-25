@@ -215,7 +215,7 @@ namespace GestaoDemandas.Enumeradores
                 case Complemento.EmailCliente:
                     return " Enviado e-mail ao cliente. No aguardo do feedback.";
                 case Complemento.AtividadeCancelado:
-                    return " Atividade cancelado por não haver necessidade. Não foi identificado nenhum problema com a aplicação.";
+                    return " Atividade cancelado por não haver necessidade por ter outra atividade vinculada no mesmo atendimento.";
                 case Complemento.ManualUsuario:
                     return " Atividade finalizada. Elaboração manual do usuário.";
                 case Complemento.AtividadeImpedidoReuniaoCliente:
