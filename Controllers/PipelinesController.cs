@@ -27,8 +27,9 @@ namespace GestaoDemandas.Controllers
                 BaseAddress = new Uri("https://analytics.dev.azure.com/")
             };
 
-            // Add Personal Access Token (PAT) for authentication
-            var pat = "wucpcjzts6okeheohrgfdntvtf5pfyism6rbrlmtdxlbeldzb7za"; // Replace with your PAT
+            // Add Personal Access Token (PAT) for authentication - Em 25/11/2024
+            // Atualiado o token para 24/11/2025.
+            var pat = "7RsNjmhu5xlMzrU3oSKToFaXL2g5rueQeoLkpz8a680MuBjM9n4IJQQJ99AKACAAAAAlfsUKAAASAZDOMfGQ"; // Replace with your PAT
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }

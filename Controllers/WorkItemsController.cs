@@ -58,7 +58,7 @@ namespace GestaoDemandas.Controllers
             };
 
             // Add Personal Access Token (PAT) for authentication
-            var pat = "wucpcjzts6okeheohrgfdntvtf5pfyism6rbrlmtdxlbeldzb7za"; // Replace with your PAT - Data da Expiração: 31/07/2025
+            var pat = "7RsNjmhu5xlMzrU3oSKToFaXL2g5rueQeoLkpz8a680MuBjM9n4IJQQJ99AKACAAAAAlfsUKAAASAZDOMfGQ"; // Replace with your PAT - Data da Expiração: 31/07/2025
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }
@@ -134,7 +134,7 @@ namespace GestaoDemandas.Controllers
             var url = "devopssee/CFIEE%20-%20Coordenadoria%20de%20Finan%C3%A7as%20e%20Infra%20Estrutura%20Escolar/_odata/v3.0-preview/WorkItems?$filter=WorkItemType eq 'User Story'       &$select=WorkItemId,Title,Custom_Atividade,State,TagNames,Custom_Sistema,Custom_Prioridade_Epic,Custom_Finalidade,Custom_NomeProjeto,Custom_SemanaProdesp,Custom_EntregaValor,Custom_Cliente,Custom_ClienteProdesp,Custom_dd460af2__002D5f88__002D4581__002D8205__002De63c777ecef9,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,Custom_b4f03334__002D2822__002D4015__002D8439__002D3f002a94bf8e,CreatedDate,Custom_DataInicioAtendimento,Custom_DataPrevistaDaEntrega, Custom_4c82d7ee__002Dbf7c__002D4b3f__002Db22f__002D0f09ef055fcc, Custom_c4b5f670__002D39f1__002D40fd__002Dace5__002D329f6170c36d,Custom_e9e5e387__002D39de__002D4875__002D94a5__002Db5721f8e21ef &$expand=AssignedTo($select=UserName),Teams($select=TeamName),BoardLocations($select=ColumnName,IsDone,BoardName)&$orderby=CreatedDate desc";
 
             // Set Personal Access Token (PAT) for authentication
-            var pat = "wucpcjzts6okeheohrgfdntvtf5pfyism6rbrlmtdxlbeldzb7za"; // Replace with your PAT em 31/07/2025
+            var pat = "7RsNjmhu5xlMzrU3oSKToFaXL2g5rueQeoLkpz8a680MuBjM9n4IJQQJ99AKACAAAAAlfsUKAAASAZDOMfGQ"; // Replace with your PAT em 31/07/2025
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
 
