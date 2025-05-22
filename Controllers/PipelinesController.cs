@@ -29,7 +29,7 @@ namespace GestaoDemandas.Controllers
 
             // Add Personal Access Token (PAT) for authentication - Em 25/11/2024
             // Atualiado o token para 24/11/2025.
-            var pat = "7RsNjmhu5xlMzrU3oSKToFaXL2g5rueQeoLkpz8a680MuBjM9n4IJQQJ99AKACAAAAAlfsUKAAASAZDOMfGQ"; // Replace with your PAT
+            var pat = "3BjP6NggUWt6gwdMc0F6CKDZmg4IpiCAjzfscH0hl9Y19HIl4iaxJQQJ99BBACAAAAAlfsUKAAASAZDO2Oiv"; // Replace with your PAT
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes($":{pat}")));
         }

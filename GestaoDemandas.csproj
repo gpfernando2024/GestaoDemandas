@@ -239,11 +239,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Content\Imagens\Logo Prodesp.jpg" />
-    <Content Include="Content\Imagens\Logo SEDUC.jpg" />
     <None Include="Content\Imagens\Logo-Prodesp.jpg" />
     <None Include="Content\Imagens\Logo-SEDUC.jpg" />
-    <None Include="Content\Imagens\Novo-Logo- Prodesp.jpg" />
     <None Include="Content\Imagens\Novo-Logo-SEDUC.jpg" />
     <None Include="Content\Imagens\Novo-Logo-Prodesp.jpg" />
     <Content Include="Global.asax" />
